@@ -2,6 +2,7 @@
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace OsuMp3
 {
@@ -9,7 +10,6 @@ namespace OsuMp3
     {
         private readonly WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
         private static string path = @"C:\Osu!\Songs";
-        private static string[] files;
         private bool isFound = false;
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
@@ -26,7 +26,7 @@ namespace OsuMp3
 
             try
             {
-                files = Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories);//searches dir for mp3 files
+                nowPlaying.Items.AddRange(Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories));  //searches dir for mp3 files
             }
             catch (DirectoryNotFoundException)
             {
@@ -35,13 +35,11 @@ namespace OsuMp3
                 Ok_Click(this, null);
             }
 
-            nowPlaying.Items.AddRange(files);
             pathBox.Text = path;
 
             try
             {
                 nowPlaying.SelectedIndex = 0;
-                nowPlaying.Text = files[0];
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -49,8 +47,6 @@ namespace OsuMp3
                 Browse_Click(this, null);
                 Ok_Click(this, null);
             }
-
-            files = null;
         }
         private void Play_Click(object sender, EventArgs e)
         {
@@ -69,21 +65,20 @@ namespace OsuMp3
         }
         private void NowPlaying_TextChanged(object sender, EventArgs e)
         {
+            albumPicture.Image.Dispose();
             player.URL = nowPlaying.Text;
-            currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
-            string[] backgroundFiles = Directory.GetFiles(@Path.GetDirectoryName(player.URL), "*.jpg", SearchOption.TopDirectoryOnly);
+
             try
             {
-                albumPicture.Image = new Bitmap(backgroundFiles[0]);
+                albumPicture.Image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.jpg", SearchOption.TopDirectoryOnly).First());
             }
-            catch (IndexOutOfRangeException)
+            catch (InvalidOperationException)
             {
-                backgroundFiles = Directory.GetFiles(@Path.GetDirectoryName(player.URL), "*.png", SearchOption.TopDirectoryOnly);
                 try
                 {
-                    albumPicture.Image = new Bitmap(backgroundFiles[0]);
+                    albumPicture.Image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.png", SearchOption.TopDirectoryOnly).First());
                 }
-                catch (IndexOutOfRangeException)
+                catch (InvalidOperationException)
                 {
                     albumPicture.Image = Properties.Resources.circles;
                 }
@@ -151,7 +146,6 @@ namespace OsuMp3
                     isFound = true;
                     nowPlaying.SelectedIndex = x;
                     search.Text = "";
-                    nowPlaying.Text = nowPlaying.GetItemText(nowPlaying.Items[x]);
                     SearchVisible(false);
                     break;
                 }
@@ -209,6 +203,7 @@ namespace OsuMp3
                     playNext.Start();
                     break;
                 default:
+                    currentPosition.Text = "00:00";
                     timeLeft.Value = 0;
                     timer.Stop();
                     play.Text = "Play";

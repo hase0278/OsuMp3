@@ -124,6 +124,7 @@
             // 
             // albumPicture
             // 
+            this.albumPicture.Image = global::OsuMp3.Properties.Resources.circles;
             this.albumPicture.Location = new System.Drawing.Point(35, 61);
             this.albumPicture.Name = "albumPicture";
             this.albumPicture.Size = new System.Drawing.Size(719, 225);
@@ -272,7 +273,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(816, 489);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.currentPosition);
             this.Controls.Add(this.searchlbl);
             this.Controls.Add(this.findBtn);
