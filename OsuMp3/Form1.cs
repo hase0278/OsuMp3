@@ -7,7 +7,7 @@ namespace OsuMp3
 {
     public partial class Form1 : Form
     {
-        private static readonly WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
+        private readonly WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
         private static string path = @"C:\Osu!\Songs";
         private static string[] files;
         private bool isFound = false;
@@ -35,9 +35,8 @@ namespace OsuMp3
                 Ok_Click(this, null);
             }
 
-            pathBox.Text = path;
-
             nowPlaying.Items.AddRange(files);
+            pathBox.Text = path;
 
             try
             {
@@ -50,6 +49,8 @@ namespace OsuMp3
                 Browse_Click(this, null);
                 Ok_Click(this, null);
             }
+
+            files = null;
         }
         private void Play_Click(object sender, EventArgs e)
         {
@@ -95,12 +96,12 @@ namespace OsuMp3
             try
             {
                 nowPlaying.SelectedIndex += 1;
-                player.URL = nowPlaying.Text;
+                playNext.Start();
             }
             catch (ArgumentOutOfRangeException)
             {
                 nowPlaying.SelectedIndex = 0;
-                nowPlaying.Text = nowPlaying.GetItemText(nowPlaying.Items[nowPlaying.SelectedIndex]);
+                playNext.Start();
             }
         }
         private void Previous_Click(object sender, EventArgs e)
@@ -108,12 +109,12 @@ namespace OsuMp3
             if (nowPlaying.SelectedIndex != 0)
             {
                 nowPlaying.SelectedIndex -= 1;
-                player.URL = nowPlaying.Text;
+                playNext.Start();
             }
             else
             {
                 nowPlaying.SelectedIndex = nowPlaying.Items.Count - 1;
-                nowPlaying.Text = nowPlaying.GetItemText(nowPlaying.Items[nowPlaying.SelectedIndex]);
+                playNext.Start();
             }
         }
         private void Browse_Click(object sender, EventArgs e)
