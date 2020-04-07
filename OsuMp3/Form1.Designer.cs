@@ -49,6 +49,9 @@
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setOSUSongsFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractPlayingMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractAllMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundCopy = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -246,7 +249,9 @@
             // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.searchToolStripMenuItem,
-            this.setOSUSongsFolderToolStripMenuItem});
+            this.setOSUSongsFolderToolStripMenuItem,
+            this.extractPlayingMusicToolStripMenuItem,
+            this.extractAllMusicToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -267,6 +272,32 @@
             this.setOSUSongsFolderToolStripMenuItem.Text = "Set OSU Songs Folder";
             this.setOSUSongsFolderToolStripMenuItem.Click += new System.EventHandler(this.SetOsuSongsFolderToolStripMenuItem_Click);
             // 
+            // extractPlayingMusicToolStripMenuItem
+            // 
+            this.extractPlayingMusicToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.extractPlayingMusicToolStripMenuItem.Name = "extractPlayingMusicToolStripMenuItem";
+            this.extractPlayingMusicToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.extractPlayingMusicToolStripMenuItem.Text = "Extract Playing Music";
+            this.extractPlayingMusicToolStripMenuItem.Click += new System.EventHandler(this.ExtractPlayingMusicToolStripMenuItem_Click);
+            // 
+            // extractAllMusicToolStripMenuItem
+            // 
+            this.extractAllMusicToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.extractAllMusicToolStripMenuItem.Name = "extractAllMusicToolStripMenuItem";
+            this.extractAllMusicToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.extractAllMusicToolStripMenuItem.Text = "Extract All Music";
+            this.extractAllMusicToolStripMenuItem.Click += new System.EventHandler(this.ExtractAllMusicToolStripMenuItem_Click);
+            // 
+            // backgroundCopy
+            // 
+            this.backgroundCopy.AutoSize = true;
+            this.backgroundCopy.Location = new System.Drawing.Point(588, 393);
+            this.backgroundCopy.Name = "backgroundCopy";
+            this.backgroundCopy.Size = new System.Drawing.Size(146, 13);
+            this.backgroundCopy.TabIndex = 22;
+            this.backgroundCopy.Text = "Files copying on background:";
+            this.backgroundCopy.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -274,6 +305,7 @@
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.backgroundCopy);
             this.Controls.Add(this.currentPosition);
             this.Controls.Add(this.searchlbl);
             this.Controls.Add(this.findBtn);
@@ -333,6 +365,9 @@
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setOSUSongsFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractPlayingMusicToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractAllMusicToolStripMenuItem;
+        private System.Windows.Forms.Label backgroundCopy;
     }
 }
 

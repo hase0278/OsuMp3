@@ -115,13 +115,19 @@ namespace OsuMp3
         private void Browse_Click(object sender, EventArgs e)
         {
             ok.Visible = true;
+
+            pathBox.Text = OpenFileDiag("Select osu songs folder:");
+            
+        }
+        private string OpenFileDiag(string Description)
+        {
             using (FolderBrowserDialog openFile = new FolderBrowserDialog())
             {
-                openFile.Description = "Select osu songs folder:";
+                openFile.Description = Description;
                 openFile.SelectedPath = path;
                 openFile.ShowDialog();
 
-                pathBox.Text = openFile.SelectedPath;
+                return openFile.SelectedPath;
             }
         }
         private void Ok_Click(object sender, EventArgs e)
@@ -136,7 +142,6 @@ namespace OsuMp3
 
             Form1_Load(this, null);
         }
-
         private void FindBtn_Click(object sender, EventArgs e)
         {
             for (int x = 0; x < nowPlaying.Items.Count; x++)
@@ -231,24 +236,86 @@ namespace OsuMp3
         {
             FolderSetVisible(true);
         }
-
         private void SearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SearchVisible(true);
         }
-
         private void FolderSetVisible(bool visibility)
         {
             pathlbl.Visible = visibility;
             pathBox.Visible = visibility;
             browse.Visible = visibility;
         }
-
         private void SearchVisible(bool visibility)
         {
             searchlbl.Visible = visibility;
             search.Visible = visibility;
             findBtn.Visible = visibility;
+        }
+        private void ExtractPlayingMusicToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string savepath = @OpenFileDiag("Select Your File Save Destination: ");
+            try
+            {
+                File.Copy(nowPlaying.Text, savepath +@"\"+ Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3");
+                MessageBox.Show("mp3 file extracted. Saved to: "+savepath, "Osu Mp3 Player");
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("File aready exists!", "Osu Mp3 Player");
+            }
+        }
+        private void ExtractAllMusicToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string savepath = @OpenFileDiag("Select Your File Save Destination: ");
+            int success = 0, error = 0;
+            for (int x = 0; x < nowPlaying.Items.Count; x++)
+            {
+                if(savepath == path)
+                {
+                    break;
+                }else if(x == 0 && savepath != path)
+                {
+                    backgroundCopy.Visible = true;
+                    MessageBox.Show("Files Copying on Background. Please wait.", "Osu Music Player");
+                }
+                Application.DoEvents();
+                backgroundCopy.Text = "Files copying on background... \r\n" + (x+1) + " out of " + nowPlaying.Items.Count + " copied \r\n"+error+" failed"; ;
+                try
+                {
+                    if(File.Exists(@savepath + @"\" + Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3"))
+                    {
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3", true);
+                    }
+                    else
+                    {
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3", true);
+                    }
+                    success++;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    try
+                    {
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3", true);
+                        success++;
+                    }
+                    catch (Exception)
+                    {
+                        error++;
+                    }
+                }
+                catch (Exception)
+                {
+                    error++;
+                }
+
+                if (x == nowPlaying.Items.Count - 1)
+                {
+                    MessageBox.Show("Sucessfully copied " + success + " files. Error occured when copying " + error + " files.", "Osu Mp3 Player");
+                }
+            }
+            backgroundCopy.Visible = false;
         }
     }
 }
