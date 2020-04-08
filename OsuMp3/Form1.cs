@@ -144,19 +144,20 @@ namespace OsuMp3
         }
         private void FindBtn_Click(object sender, EventArgs e)
         {
+            isFound = false;
+            SearchResult.Items.Clear();
+            SearchResult.Visible = false;
             for (int x = 0; x < nowPlaying.Items.Count; x++)
             {
                 if (nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.Trim(".mp3".ToCharArray()).ToLower()))
                 {
+                    SearchResult.Visible = true;
                     isFound = true;
-                    nowPlaying.SelectedIndex = x;
-                    search.Text = "";
-                    SearchVisible(false);
-                    break;
+                    SearchResult.Items.Add(nowPlaying.Items[x].ToString());
                 }
                 else
                 {
-                    if(x == (nowPlaying.Items.Count - 1))
+                    if(x == (nowPlaying.Items.Count - 1) && !isFound)
                     {
                         isFound = false;
                     }
@@ -257,12 +258,16 @@ namespace OsuMp3
             string savepath = @OpenFileDiag("Select Your File Save Destination: ");
             try
             {
-                File.Copy(nowPlaying.Text, savepath +@"\"+ Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3");
+                File.Copy(nowPlaying.Text, savepath +@"\"+ Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3");
                 MessageBox.Show("mp3 file extracted. Saved to: "+savepath, "Osu Mp3 Player");
             }
             catch (IOException)
             {
-                MessageBox.Show("File aready exists!", "Osu Mp3 Player");
+                MessageBox.Show("File copy error! Either file exist or another path related error.", "Osu Mp3 Player");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "OSU Mp3 Player");
             }
         }
         private void ExtractAllMusicToolStripMenuItem_Click(object sender, EventArgs e)
@@ -283,27 +288,15 @@ namespace OsuMp3
                 backgroundCopy.Text = "Files copying on background... \r\n" + (x+1) + " out of " + nowPlaying.Items.Count + " copied \r\n"+error+" failed"; ;
                 try
                 {
-                    if(File.Exists(@savepath + @"\" + Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3"))
+                    if(File.Exists(@savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3"))
                     {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3", true);
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + "_"+ x +".mp3", false);
                     }
                     else
                     {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3", true);
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3", false);
                     }
                     success++;
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    try
-                    {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()).TrimStart("0123456789".ToCharArray()).TrimStart(' ') + ".mp3", true);
-                        success++;
-                    }
-                    catch (Exception)
-                    {
-                        error++;
-                    }
                 }
                 catch (Exception)
                 {
@@ -316,6 +309,24 @@ namespace OsuMp3
                 }
             }
             backgroundCopy.Visible = false;
+        }
+        private void SearchResult_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            for(int x = 0; x < nowPlaying.Items.Count; x++)
+            {
+                if (nowPlaying.GetItemText(nowPlaying.Items[x]).Equals(SearchResult.Text))
+                {
+                    SearchVisible(false);
+                    nowPlaying.SelectedIndex = x;
+                    SearchResult.Items.Clear();
+                    SearchResult.Visible = false;
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+            }
         }
     }
 }

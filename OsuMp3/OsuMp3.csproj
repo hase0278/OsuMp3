@@ -7,7 +7,7 @@
     <ProjectGuid>{494FD05A-556F-4AFD-BF39-D02135C7DDD2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>OsuMp3</RootNamespace>
-    <AssemblyName>OsuMp3</AssemblyName>
+    <AssemblyName>OSU Music</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

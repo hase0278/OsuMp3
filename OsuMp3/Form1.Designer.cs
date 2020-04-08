@@ -52,6 +52,7 @@
             this.extractPlayingMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAllMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundCopy = new System.Windows.Forms.Label();
+            this.SearchResult = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -298,6 +299,16 @@
             this.backgroundCopy.Text = "Files copying on background:";
             this.backgroundCopy.Visible = false;
             // 
+            // SearchResult
+            // 
+            this.SearchResult.FormattingEnabled = true;
+            this.SearchResult.Location = new System.Drawing.Point(80, 52);
+            this.SearchResult.Name = "SearchResult";
+            this.SearchResult.Size = new System.Drawing.Size(627, 56);
+            this.SearchResult.TabIndex = 23;
+            this.SearchResult.Visible = false;
+            this.SearchResult.SelectedIndexChanged += new System.EventHandler(this.SearchResult_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,6 +316,7 @@
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.SearchResult);
             this.Controls.Add(this.backgroundCopy);
             this.Controls.Add(this.currentPosition);
             this.Controls.Add(this.searchlbl);
@@ -332,7 +344,7 @@
             this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Osu Music Player";
+            this.Text = "Osu Music";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).EndInit();
@@ -368,6 +380,7 @@
         private System.Windows.Forms.ToolStripMenuItem extractPlayingMusicToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAllMusicToolStripMenuItem;
         private System.Windows.Forms.Label backgroundCopy;
+        private System.Windows.Forms.ListBox SearchResult;
     }
 }
 
