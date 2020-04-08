@@ -23,14 +23,13 @@ namespace OsuMp3
         private void Form1_Load(object sender, EventArgs e)
         {
             nowPlaying.Items.Clear();
-
             try
             {
                 nowPlaying.Items.AddRange(Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories));  //searches dir for mp3 files
             }
             catch (DirectoryNotFoundException)
             {
-                MessageBox.Show("Directory not found! Select OSU Songs Directory", "Osu MP3 Player");
+                MessageBox.Show("Directory not found! Select OSU Songs Directory", "Osu Music");
                 Browse_Click(this, null);
                 Ok_Click(this, null);
             }
@@ -43,7 +42,7 @@ namespace OsuMp3
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show("No MP3 file found on directory! Select OSU Songs Directory", "Osu MP3 Player");
+                MessageBox.Show("No MP3 file found on directory! Select OSU Songs Directory", "Osu Music");
                 Browse_Click(this, null);
                 Ok_Click(this, null);
             }
@@ -67,7 +66,6 @@ namespace OsuMp3
         {
             albumPicture.Image.Dispose();
             player.URL = nowPlaying.Text;
-
             try
             {
                 albumPicture.Image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.jpg", SearchOption.TopDirectoryOnly).First());
@@ -167,22 +165,13 @@ namespace OsuMp3
 
             if (!isFound)
             {
-                MessageBox.Show("Music Not Found!", "OSU Music Player");
+                MessageBox.Show("Music Not Found!", "OSU Music");
             }
         }
         private void PlayStateChanged(int newState)
         {
             switch (newState)
             {
-                case 1:    // Stopped
-                    timeLeft.Value = 0;
-                    currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
-                    timer.Stop();
-                    if (play.Text == "Pause")
-                    {
-                        play.Text = "Play";
-                    }
-                    break;
                 case 2:    // Paused
                     if (play.Text == "Pause")
                     {
@@ -194,6 +183,7 @@ namespace OsuMp3
                 case 3:    // Playing
                     if (play.Text == "Play")
                     {
+                        timeLeft.Maximum = Convert.ToInt32(Math.Floor(player.currentMedia.duration));
                         play.Text = "Pause";
                     }
 
@@ -209,8 +199,8 @@ namespace OsuMp3
                     playNext.Start();
                     break;
                 default:
-                    currentPosition.Text = "00:00";
                     timeLeft.Value = 0;
+                    currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
                     timer.Stop();
                     play.Text = "Play";
                     break;
@@ -218,7 +208,6 @@ namespace OsuMp3
         }
         private void TimerEventProcessor(object sender, EventArgs e)
         {
-            timeLeft.Maximum = Convert.ToInt32(Math.Floor(player.currentMedia.duration));
             timeLeft.Value = Convert.ToInt32(Math.Floor(player.controls.currentPosition));
             currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
         }
@@ -259,15 +248,15 @@ namespace OsuMp3
             try
             {
                 File.Copy(nowPlaying.Text, savepath +@"\"+ Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3");
-                MessageBox.Show("mp3 file extracted. Saved to: "+savepath, "Osu Mp3 Player");
+                MessageBox.Show("mp3 file extracted. Saved to: "+savepath, "Osu Music");
             }
             catch (IOException)
             {
-                MessageBox.Show("File copy error! Either file exist or another path related error.", "Osu Mp3 Player");
+                MessageBox.Show("File copy error! Either file exist or another path related error.", "Osu Music");
             }
             catch (UnauthorizedAccessException)
             {
-                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "OSU Mp3 Player");
+                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "OSU Music");
             }
         }
         private void ExtractAllMusicToolStripMenuItem_Click(object sender, EventArgs e)
@@ -282,7 +271,7 @@ namespace OsuMp3
                 }else if(x == 0 && savepath != path)
                 {
                     backgroundCopy.Visible = true;
-                    MessageBox.Show("Files Copying on Background. Please wait.", "Osu Music Player");
+                    MessageBox.Show("Files Copying on Background. Please wait.", "Osu Music");
                 }
                 Application.DoEvents();
                 backgroundCopy.Text = "Files copying on background... \r\n" + (x+1) + " out of " + nowPlaying.Items.Count + " copied \r\n"+error+" failed"; ;
@@ -305,7 +294,7 @@ namespace OsuMp3
 
                 if (x == nowPlaying.Items.Count - 1)
                 {
-                    MessageBox.Show("Sucessfully copied " + success + " files. Error occured when copying " + error + " files.", "Osu Mp3 Player");
+                    MessageBox.Show("Sucessfully copied " + success + " files. Error occured when copying " + error + " files.", "Osu Music");
                 }
             }
             backgroundCopy.Visible = false;
@@ -317,6 +306,7 @@ namespace OsuMp3
                 if (nowPlaying.GetItemText(nowPlaying.Items[x]).Equals(SearchResult.Text))
                 {
                     SearchVisible(false);
+                    search.Text = "";
                     nowPlaying.SelectedIndex = x;
                     SearchResult.Items.Clear();
                     SearchResult.Visible = false;

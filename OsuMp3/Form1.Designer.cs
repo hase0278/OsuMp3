@@ -129,9 +129,9 @@
             // albumPicture
             // 
             this.albumPicture.Image = global::OsuMp3.Properties.Resources.circles;
-            this.albumPicture.Location = new System.Drawing.Point(35, 61);
+            this.albumPicture.Location = new System.Drawing.Point(35, 58);
             this.albumPicture.Name = "albumPicture";
-            this.albumPicture.Size = new System.Drawing.Size(719, 225);
+            this.albumPicture.Size = new System.Drawing.Size(719, 228);
             this.albumPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.albumPicture.TabIndex = 10;
             this.albumPicture.TabStop = false;
