@@ -31,11 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.nowPlaying = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.play = new System.Windows.Forms.Button();
-            this.stop = new System.Windows.Forms.Button();
-            this.next = new System.Windows.Forms.Button();
-            this.previous = new System.Windows.Forms.Button();
-            this.albumPicture = new System.Windows.Forms.PictureBox();
             this.pathlbl = new System.Windows.Forms.Label();
             this.pathBox = new System.Windows.Forms.TextBox();
             this.ok = new System.Windows.Forms.Button();
@@ -53,9 +48,14 @@
             this.extractAllMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundCopy = new System.Windows.Forms.Label();
             this.SearchResult = new System.Windows.Forms.ListBox();
-            ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
+            this.albumPicture = new System.Windows.Forms.PictureBox();
+            this.previous = new System.Windows.Forms.Button();
+            this.next = new System.Windows.Forms.Button();
+            this.stop = new System.Windows.Forms.Button();
+            this.play = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
             this.SuspendLayout();
             // 
             // nowPlaying
@@ -77,64 +77,6 @@
             this.label1.Size = new System.Drawing.Size(66, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Now Playing";
-            // 
-            // play
-            // 
-            this.play.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.play.ForeColor = System.Drawing.SystemColors.Menu;
-            this.play.Location = new System.Drawing.Point(366, 364);
-            this.play.Name = "play";
-            this.play.Size = new System.Drawing.Size(75, 23);
-            this.play.TabIndex = 3;
-            this.play.Text = "Play";
-            this.play.UseVisualStyleBackColor = false;
-            this.play.Click += new System.EventHandler(this.Play_Click);
-            // 
-            // stop
-            // 
-            this.stop.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.stop.ForeColor = System.Drawing.SystemColors.Menu;
-            this.stop.Location = new System.Drawing.Point(366, 393);
-            this.stop.Name = "stop";
-            this.stop.Size = new System.Drawing.Size(75, 23);
-            this.stop.TabIndex = 5;
-            this.stop.Text = "Stop";
-            this.stop.UseVisualStyleBackColor = false;
-            this.stop.Click += new System.EventHandler(this.Stop_Click);
-            // 
-            // next
-            // 
-            this.next.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.next.ForeColor = System.Drawing.SystemColors.Menu;
-            this.next.Location = new System.Drawing.Point(493, 364);
-            this.next.Name = "next";
-            this.next.Size = new System.Drawing.Size(75, 23);
-            this.next.TabIndex = 6;
-            this.next.Text = "Next";
-            this.next.UseVisualStyleBackColor = false;
-            this.next.Click += new System.EventHandler(this.Next_Click);
-            // 
-            // previous
-            // 
-            this.previous.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.previous.ForeColor = System.Drawing.SystemColors.Menu;
-            this.previous.Location = new System.Drawing.Point(229, 364);
-            this.previous.Name = "previous";
-            this.previous.Size = new System.Drawing.Size(75, 23);
-            this.previous.TabIndex = 7;
-            this.previous.Text = "Previous";
-            this.previous.UseVisualStyleBackColor = false;
-            this.previous.Click += new System.EventHandler(this.Previous_Click);
-            // 
-            // albumPicture
-            // 
-            this.albumPicture.Image = global::OsuMp3.Properties.Resources.circles;
-            this.albumPicture.Location = new System.Drawing.Point(35, 58);
-            this.albumPicture.Name = "albumPicture";
-            this.albumPicture.Size = new System.Drawing.Size(719, 228);
-            this.albumPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.albumPicture.TabIndex = 10;
-            this.albumPicture.TabStop = false;
             // 
             // pathlbl
             // 
@@ -309,6 +251,68 @@
             this.SearchResult.Visible = false;
             this.SearchResult.SelectedIndexChanged += new System.EventHandler(this.SearchResult_SelectedIndexChanged);
             // 
+            // albumPicture
+            // 
+            this.albumPicture.Image = global::OsuMp3.Properties.Resources.circles;
+            this.albumPicture.Location = new System.Drawing.Point(35, 58);
+            this.albumPicture.Name = "albumPicture";
+            this.albumPicture.Size = new System.Drawing.Size(719, 228);
+            this.albumPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.albumPicture.TabIndex = 10;
+            this.albumPicture.TabStop = false;
+            // 
+            // previous
+            // 
+            this.previous.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.previous.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("previous.BackgroundImage")));
+            this.previous.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.previous.ForeColor = System.Drawing.SystemColors.Menu;
+            this.previous.Location = new System.Drawing.Point(253, 364);
+            this.previous.Name = "previous";
+            this.previous.Size = new System.Drawing.Size(63, 28);
+            this.previous.TabIndex = 7;
+            this.previous.UseVisualStyleBackColor = false;
+            this.previous.Click += new System.EventHandler(this.Previous_Click);
+            // 
+            // next
+            // 
+            this.next.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.next.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("next.BackgroundImage")));
+            this.next.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.next.ForeColor = System.Drawing.SystemColors.Menu;
+            this.next.Location = new System.Drawing.Point(460, 364);
+            this.next.Name = "next";
+            this.next.Size = new System.Drawing.Size(63, 28);
+            this.next.TabIndex = 6;
+            this.next.UseVisualStyleBackColor = false;
+            this.next.Click += new System.EventHandler(this.Next_Click);
+            // 
+            // stop
+            // 
+            this.stop.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.stop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("stop.BackgroundImage")));
+            this.stop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.stop.ForeColor = System.Drawing.SystemColors.Menu;
+            this.stop.Location = new System.Drawing.Point(391, 364);
+            this.stop.Name = "stop";
+            this.stop.Size = new System.Drawing.Size(63, 28);
+            this.stop.TabIndex = 5;
+            this.stop.UseVisualStyleBackColor = false;
+            this.stop.Click += new System.EventHandler(this.Stop_Click);
+            // 
+            // play
+            // 
+            this.play.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.play.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("play.BackgroundImage")));
+            this.play.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.play.ForeColor = System.Drawing.SystemColors.Menu;
+            this.play.Location = new System.Drawing.Point(322, 364);
+            this.play.Name = "play";
+            this.play.Size = new System.Drawing.Size(63, 28);
+            this.play.TabIndex = 3;
+            this.play.UseVisualStyleBackColor = false;
+            this.play.Click += new System.EventHandler(this.Play_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -346,10 +350,10 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Osu Music";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -8,11 +8,15 @@ namespace OsuMp3
 {
     public partial class Form1 : Form
     {
+        #region member variables
         private readonly WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
         private static string path = @"C:\Osu!\Songs";
         private bool isFound = false;
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
+        private string playpause = "play";
+        #endregion
+        #region constructor
         public Form1()
         {
             playNext.Tick += PlayNextEvent;
@@ -20,6 +24,8 @@ namespace OsuMp3
             player.PlayStateChange += PlayStateChanged;
             InitializeComponent();
         }
+        #endregion
+        #region events
         private void Form1_Load(object sender, EventArgs e)
         {
             nowPlaying.Items.Clear();
@@ -49,11 +55,11 @@ namespace OsuMp3
         }
         private void Play_Click(object sender, EventArgs e)
         {
-            if (play.Text == "Play")
+            if(playpause == "play")
             {
                 player.controls.play();
             }
-            else if (play.Text == "Pause")
+            else if (playpause == "pause")
             {
                 player.controls.pause();
             }
@@ -66,22 +72,22 @@ namespace OsuMp3
         {
             albumPicture.Image.Dispose();
             player.URL = nowPlaying.Text;
+            Bitmap image = null;
             try
             {
-                albumPicture.Image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.jpg", SearchOption.TopDirectoryOnly).First());
+                image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.*", SearchOption.TopDirectoryOnly).Where(s => !s.ToLower().Contains("albumart") && (s.EndsWith(".jpg") || s.EndsWith(".jpeg") || s.EndsWith(".png"))).First());
+                albumPicture.Image = image;
+                image = null;
             }
             catch (InvalidOperationException)
             {
-                try
-                {
-                    albumPicture.Image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.png", SearchOption.TopDirectoryOnly).First());
-                }
-                catch (InvalidOperationException)
-                {
-                    albumPicture.Image = Properties.Resources.circles;
-                }
+                albumPicture.Image = Properties.Resources.circles;
             }
-
+            finally
+            {
+                image?.Dispose();
+            }
+            
             player.controls.stop();
         }
         private void Next_Click(object sender, EventArgs e)
@@ -116,17 +122,6 @@ namespace OsuMp3
 
             pathBox.Text = OpenFileDiag("Select osu songs folder:");
             
-        }
-        private string OpenFileDiag(string Description)
-        {
-            using (FolderBrowserDialog openFile = new FolderBrowserDialog())
-            {
-                openFile.Description = Description;
-                openFile.SelectedPath = path;
-                openFile.ShowDialog();
-
-                return openFile.SelectedPath;
-            }
         }
         private void Ok_Click(object sender, EventArgs e)
         {
@@ -173,42 +168,36 @@ namespace OsuMp3
             switch (newState)
             {
                 case 2:    // Paused
-                    if (play.Text == "Pause")
-                    {
-                        play.Text = "Play";
-                    }
+                    play.BackgroundImage = Properties.Resources.play;
+                    playpause = "play";
                     timer.Stop();
-
                     break;
                 case 3:    // Playing
-                    if (play.Text == "Play")
-                    {
-                        timeLeft.Maximum = Convert.ToInt32(Math.Floor(player.currentMedia.duration));
-                        play.Text = "Pause";
-                    }
-
+                    play.BackgroundImage.Dispose();
+                    timeLeft.Maximum = Convert.ToInt32(Math.Floor(player.currentMedia.duration));
+                    play.BackgroundImage = Properties.Resources.pause;
+                    playpause = "pause";
                     timer.Interval = 1000;
                     timer.Start();
                     break;
                 case 8:    // MediaEnded
-                    if (play.Text == "Pause")
-                    {
-                        play.Text = "Play";
-                    }
+                    play.BackgroundImage = Properties.Resources.play;
+                    playpause = "play";
                     next.PerformClick();
                     playNext.Start();
                     break;
                 default:
+                    play.BackgroundImage = Properties.Resources.play;
                     timeLeft.Value = 0;
                     currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
                     timer.Stop();
-                    play.Text = "Play";
+                    playpause = "play";
                     break;
             }
         }
         private void TimerEventProcessor(object sender, EventArgs e)
         {
-            timeLeft.Value = Convert.ToInt32(Math.Floor(player.controls.currentPosition));
+            timeLeft.Value = (int)Math.Floor(player.controls.currentPosition);
             currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
         }
         private void PlayNextEvent(object sender, EventArgs e)
@@ -219,7 +208,7 @@ namespace OsuMp3
         private void TimeLeft_Scroll(object sender, EventArgs e)
         {
             player.controls.currentPosition = timeLeft.Value;
-            timeLeft.Value = Convert.ToInt32(Math.Floor(player.controls.currentPosition));
+            timeLeft.Value = (int)Math.Floor(player.controls.currentPosition);
             currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
         }
         private void SetOsuSongsFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -229,18 +218,6 @@ namespace OsuMp3
         private void SearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SearchVisible(true);
-        }
-        private void FolderSetVisible(bool visibility)
-        {
-            pathlbl.Visible = visibility;
-            pathBox.Visible = visibility;
-            browse.Visible = visibility;
-        }
-        private void SearchVisible(bool visibility)
-        {
-            searchlbl.Visible = visibility;
-            search.Visible = visibility;
-            findBtn.Visible = visibility;
         }
         private void ExtractPlayingMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -301,22 +278,37 @@ namespace OsuMp3
         }
         private void SearchResult_SelectedIndexChanged(object sender, EventArgs e)
         {
-            for(int x = 0; x < nowPlaying.Items.Count; x++)
+            SearchVisible(false);
+            search.Text = "";
+            nowPlaying.SelectedIndex = nowPlaying.Items.IndexOf(SearchResult.Text);
+            SearchResult.Items.Clear();
+            SearchResult.Visible = false;
+        }
+        #endregion
+        #region methods
+        private string OpenFileDiag(string Description)
+        {
+            using (FolderBrowserDialog openFile = new FolderBrowserDialog())
             {
-                if (nowPlaying.GetItemText(nowPlaying.Items[x]).Equals(SearchResult.Text))
-                {
-                    SearchVisible(false);
-                    search.Text = "";
-                    nowPlaying.SelectedIndex = x;
-                    SearchResult.Items.Clear();
-                    SearchResult.Visible = false;
-                    break;
-                }
-                else
-                {
-                    continue;
-                }
+                openFile.Description = Description;
+                openFile.SelectedPath = path;
+                openFile.ShowDialog();
+
+                return openFile.SelectedPath;
             }
         }
+        private void FolderSetVisible(bool visibility)
+        {
+            pathlbl.Visible = visibility;
+            pathBox.Visible = visibility;
+            browse.Visible = visibility;
+        }
+        private void SearchVisible(bool visibility)
+        {
+            searchlbl.Visible = visibility;
+            search.Visible = visibility;
+            findBtn.Visible = visibility;
+        }
+        #endregion
     }
 }
