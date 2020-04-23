@@ -28,6 +28,11 @@ namespace OsuMp3
         }
         #endregion
         #region events
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            label1.Text = "Loading Audio Files. Please wait.";
+            setControlActivity(false);
+        }
         private void Form1_Shown(object sender, EventArgs e)
         {
             Application.DoEvents();
@@ -35,23 +40,33 @@ namespace OsuMp3
             nowPlaying.Items.Clear();
             try
             {
-                foreach (string osuFilePath in Directory.GetDirectories(path))
+                string line, file, temp = " ";
+                foreach(string osuFilePath in Directory.EnumerateFiles(path, "*.osu", SearchOption.AllDirectories))
                 {
                     try
                     {
-                        using (StreamReader sr = new StreamReader(Directory.EnumerateFiles(osuFilePath, "*.osu", SearchOption.TopDirectoryOnly).First()))
+                        using (StreamReader sr = new StreamReader(osuFilePath))
                         {
                             bool hasPic = false;
-                            string line;
+
                             while ((line = sr.ReadLine()) != null)
                             {
                                 if (line.Contains("AudioFilename: "))
                                 {
-                                    nowPlaying.Items.Add(osuFilePath + @"\" + line.Split(new char[] { ' ' }, 2)[1]);
+                                    if ((file = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(temp))
+                                    {
+                                        hasPic = true;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        nowPlaying.Items.Add(file);
+                                        temp = file;
+                                    }
                                 }
                                 else if (line.Contains("0,0,") && (line.Contains(".jpg") || line.Contains(".png") || line.Contains(".jpeg")))
                                 {
-                                    picPath.Add(osuFilePath + @"\" + line.Split(new char[] { '"' }, 3)[1]);
+                                    picPath.Add(Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { '"' }, 3)[1].TrimStart(' '));
                                     hasPic = true;
                                     break;
                                 }
@@ -75,6 +90,7 @@ namespace OsuMp3
                         continue;
                     }
                 }
+                setControlActivity(true);
             }
             catch (DirectoryNotFoundException)
             {
@@ -88,6 +104,7 @@ namespace OsuMp3
             try
             {
                 nowPlaying.SelectedIndex = 0;
+                label1.Text = "Now Playing";
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -114,15 +131,15 @@ namespace OsuMp3
         private void NowPlaying_TextChanged(object sender, EventArgs e)
         {
             albumPicture.Image.Dispose();
-            player.URL = nowPlaying.Text;
-            if(picPath[nowPlaying.SelectedIndex] == "No Pic")
+            if (picPath[nowPlaying.SelectedIndex] == "No Pic")
             {
                 albumPicture.Image = Properties.Resources.circles;
             }
             else
             {
-                albumPicture.Image = new Bitmap(picPath[nowPlaying.SelectedIndex]);
-            }        
+                albumPicture.Image = new Bitmap(@picPath[nowPlaying.SelectedIndex]);
+            }
+            player.URL = nowPlaying.Text;       
             player.controls.stop();
         }
         private void Next_Click(object sender, EventArgs e)
@@ -168,6 +185,7 @@ namespace OsuMp3
             FolderSetVisible(false);
             ok.Visible = false;
 
+            setControlActivity(false);
             Form1_Shown(this, null);
         }
         private void FindBtn_Click(object sender, EventArgs e)
@@ -206,7 +224,6 @@ namespace OsuMp3
                     play.BackgroundImage.Dispose();
                     play.BackgroundImage = Properties.Resources.play;
                     playpause = "play";
-                    timer.Stop();
                     break;
                 case 3:    // Playing
                     play.BackgroundImage.Dispose();
@@ -227,8 +244,6 @@ namespace OsuMp3
                     play.BackgroundImage.Dispose();
                     play.BackgroundImage = Properties.Resources.play;
                     timeLeft.Value = 0;
-                    currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
-                    timer.Stop();
                     playpause = "play";
                     break;
             }
@@ -316,14 +331,28 @@ namespace OsuMp3
         }
         private void SearchResult_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SearchVisible(false);
-            search.Text = "";
-            nowPlaying.SelectedIndex = nowPlaying.Items.IndexOf(SearchResult.Text);
-            SearchResult.Items.Clear();
-            SearchResult.Visible = false;
+            if(SearchResult.Text.Trim(' ') == "")
+            {
+
+            }
+            else
+            {
+                SearchVisible(false);
+                search.Text = "";
+                nowPlaying.SelectedIndex = nowPlaying.Items.IndexOf(SearchResult.Text);
+                SearchResult.Items.Clear();
+                SearchResult.Visible = false;
+            }
         }
         #endregion
         #region methods
+        private void setControlActivity(bool state)
+        {
+            play.Enabled = state;
+            stop.Enabled = state;
+            next.Enabled = state;
+            stop.Enabled = state;
+        }
         private string OpenFileDiag(string Description)
         {
             using (FolderBrowserDialog openFile = new FolderBrowserDialog())
