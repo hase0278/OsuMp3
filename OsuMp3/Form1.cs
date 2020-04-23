@@ -3,6 +3,7 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace OsuMp3
 {
@@ -15,6 +16,7 @@ namespace OsuMp3
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
         private string playpause = "play";
+        private List<string> picPath = new List<string>();
         #endregion
         #region constructor
         public Form1()
@@ -26,12 +28,53 @@ namespace OsuMp3
         }
         #endregion
         #region events
-        private void Form1_Load(object sender, EventArgs e)
+        private void Form1_Shown(object sender, EventArgs e)
         {
+            Application.DoEvents();
+            picPath.Clear();
             nowPlaying.Items.Clear();
             try
             {
-                nowPlaying.Items.AddRange(Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories));  //searches dir for mp3 files
+                foreach (string osuFilePath in Directory.GetDirectories(path))
+                {
+                    try
+                    {
+                        using (StreamReader sr = new StreamReader(Directory.EnumerateFiles(osuFilePath, "*.osu", SearchOption.TopDirectoryOnly).First()))
+                        {
+                            bool hasPic = false;
+                            string line;
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                if (line.Contains("AudioFilename: "))
+                                {
+                                    nowPlaying.Items.Add(osuFilePath + @"\" + line.Split(new char[] { ' ' }, 2)[1]);
+                                }
+                                else if (line.Contains("0,0,") && (line.Contains(".jpg") || line.Contains(".png") || line.Contains(".jpeg")))
+                                {
+                                    picPath.Add(osuFilePath + @"\" + line.Split(new char[] { '"' }, 3)[1]);
+                                    hasPic = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            if (!hasPic)
+                            {
+                                picPath.Add("No Pic");
+                            }
+                            else
+                            {
+                                hasPic = false;
+                            }
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        continue;
+                    }
+                }
             }
             catch (DirectoryNotFoundException)
             {
@@ -72,22 +115,14 @@ namespace OsuMp3
         {
             albumPicture.Image.Dispose();
             player.URL = nowPlaying.Text;
-            Bitmap image = null;
-            try
-            {
-                image = new Bitmap(Directory.EnumerateFiles(@Path.GetDirectoryName(player.URL), "*.*", SearchOption.TopDirectoryOnly).Where(s => !s.ToLower().Contains("albumart") && (s.EndsWith(".jpg") || s.EndsWith(".jpeg") || s.EndsWith(".png"))).First());
-                albumPicture.Image = image;
-                image = null;
-            }
-            catch (InvalidOperationException)
+            if(picPath[nowPlaying.SelectedIndex] == "No Pic")
             {
                 albumPicture.Image = Properties.Resources.circles;
             }
-            finally
+            else
             {
-                image?.Dispose();
-            }
-            
+                albumPicture.Image = new Bitmap(picPath[nowPlaying.SelectedIndex]);
+            }        
             player.controls.stop();
         }
         private void Next_Click(object sender, EventArgs e)
@@ -133,7 +168,7 @@ namespace OsuMp3
             FolderSetVisible(false);
             ok.Visible = false;
 
-            Form1_Load(this, null);
+            Form1_Shown(this, null);
         }
         private void FindBtn_Click(object sender, EventArgs e)
         {
@@ -168,6 +203,7 @@ namespace OsuMp3
             switch (newState)
             {
                 case 2:    // Paused
+                    play.BackgroundImage.Dispose();
                     play.BackgroundImage = Properties.Resources.play;
                     playpause = "play";
                     timer.Stop();
@@ -181,12 +217,14 @@ namespace OsuMp3
                     timer.Start();
                     break;
                 case 8:    // MediaEnded
+                    play.BackgroundImage.Dispose();
                     play.BackgroundImage = Properties.Resources.play;
                     playpause = "play";
                     next.PerformClick();
                     playNext.Start();
                     break;
                 default:
+                    play.BackgroundImage.Dispose();
                     play.BackgroundImage = Properties.Resources.play;
                     timeLeft.Value = 0;
                     currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");

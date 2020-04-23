@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="logo.ico" />
+    <None Include="Resources\stop.png" />
     <None Include="Resources\stop.jpg" />
     <None Include="Resources\previous.png" />
     <None Include="Resources\play.png" />
