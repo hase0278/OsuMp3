@@ -35,7 +35,6 @@ namespace OsuMp3
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
-            Application.DoEvents();
             picPath.Clear();
             nowPlaying.Items.Clear();
             try
@@ -43,6 +42,7 @@ namespace OsuMp3
                 string line, file, temp = " ";
                 foreach(string osuFilePath in Directory.EnumerateFiles(path, "*.osu", SearchOption.AllDirectories))
                 {
+                    Application.DoEvents();
                     try
                     {
                         using (StreamReader sr = new StreamReader(osuFilePath))
@@ -53,7 +53,7 @@ namespace OsuMp3
                             {
                                 if (line.Contains("AudioFilename: "))
                                 {
-                                    if ((file = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(temp))
+                                    if ((file = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(temp) || !line.Contains(".mp3"))
                                     {
                                         hasPic = true;
                                         break;
@@ -274,20 +274,7 @@ namespace OsuMp3
         }
         private void ExtractPlayingMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string savepath = @OpenFileDiag("Select Your File Save Destination: ");
-            try
-            {
-                File.Copy(nowPlaying.Text, savepath +@"\"+ Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3");
-                MessageBox.Show("mp3 file extracted. Saved to: "+savepath, "Osu Music");
-            }
-            catch (IOException)
-            {
-                MessageBox.Show("File copy error! Either file exist or another path related error.", "Osu Music");
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "OSU Music");
-            }
+            ExtractFile(nowPlaying.Text, Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), ".mp3");
         }
         private void ExtractAllMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -376,6 +363,37 @@ namespace OsuMp3
             search.Visible = visibility;
             findBtn.Visible = visibility;
         }
+        private void ExtractFile(string sourceFileName, string destinationFileName, string extensionWithDot)
+        {
+            string savepath = @OpenFileDiag("Select Your File Save Destination: ");
+            try
+            {
+                File.Copy(sourceFileName, savepath + @"\" + destinationFileName + extensionWithDot);
+                MessageBox.Show(extensionWithDot.TrimStart('.') + " file extracted. Saved to: " + savepath, "Osu Music");
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("File copy error! Either file exist or another path related error.", "Osu Music");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "OSU Music");
+            }
+        }
         #endregion
+
+        private void extractAlbumPictureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(picPath[nowPlaying.SelectedIndex].Equals("No Pic"))
+            {
+                string savePath = OpenFileDiag("Select Your File Save Destination: ");
+                Properties.Resources.circles.Save(savePath+@"\"+"nekodex - circles.jpg");
+                MessageBox.Show("jpg file extracted. Saved to: " + savePath, "Osu Music");
+            }
+            else
+            {
+                ExtractFile(picPath[nowPlaying.SelectedIndex], Path.GetFileName(Path.GetDirectoryName(picPath[nowPlaying.SelectedIndex]).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), Path.GetExtension(picPath[nowPlaying.SelectedIndex]));
+            }
+        }
     }
 }

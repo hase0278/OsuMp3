@@ -46,6 +46,7 @@
             this.setOSUSongsFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractPlayingMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAllMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractAlbumPictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundCopy = new System.Windows.Forms.Label();
             this.SearchResult = new System.Windows.Forms.ListBox();
             this.albumPicture = new System.Windows.Forms.PictureBox();
@@ -61,6 +62,7 @@
             // nowPlaying
             // 
             this.nowPlaying.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.nowPlaying.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.nowPlaying.ForeColor = System.Drawing.SystemColors.InfoText;
             this.nowPlaying.FormattingEnabled = true;
             this.nowPlaying.Location = new System.Drawing.Point(34, 314);
@@ -195,7 +197,8 @@
             this.searchToolStripMenuItem,
             this.setOSUSongsFolderToolStripMenuItem,
             this.extractPlayingMusicToolStripMenuItem,
-            this.extractAllMusicToolStripMenuItem});
+            this.extractAllMusicToolStripMenuItem,
+            this.extractAlbumPictureToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -204,7 +207,7 @@
             // 
             this.searchToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.SearchToolStripMenuItem_Click);
             // 
@@ -212,7 +215,7 @@
             // 
             this.setOSUSongsFolderToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.setOSUSongsFolderToolStripMenuItem.Name = "setOSUSongsFolderToolStripMenuItem";
-            this.setOSUSongsFolderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.setOSUSongsFolderToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.setOSUSongsFolderToolStripMenuItem.Text = "Set OSU Songs Folder";
             this.setOSUSongsFolderToolStripMenuItem.Click += new System.EventHandler(this.SetOsuSongsFolderToolStripMenuItem_Click);
             // 
@@ -220,7 +223,7 @@
             // 
             this.extractPlayingMusicToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.extractPlayingMusicToolStripMenuItem.Name = "extractPlayingMusicToolStripMenuItem";
-            this.extractPlayingMusicToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.extractPlayingMusicToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.extractPlayingMusicToolStripMenuItem.Text = "Extract Playing Music";
             this.extractPlayingMusicToolStripMenuItem.Click += new System.EventHandler(this.ExtractPlayingMusicToolStripMenuItem_Click);
             // 
@@ -228,9 +231,17 @@
             // 
             this.extractAllMusicToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.extractAllMusicToolStripMenuItem.Name = "extractAllMusicToolStripMenuItem";
-            this.extractAllMusicToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.extractAllMusicToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.extractAllMusicToolStripMenuItem.Text = "Extract All Music";
             this.extractAllMusicToolStripMenuItem.Click += new System.EventHandler(this.ExtractAllMusicToolStripMenuItem_Click);
+            // 
+            // extractAlbumPictureToolStripMenuItem
+            // 
+            this.extractAlbumPictureToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.extractAlbumPictureToolStripMenuItem.Name = "extractAlbumPictureToolStripMenuItem";
+            this.extractAlbumPictureToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.extractAlbumPictureToolStripMenuItem.Text = "Extract Album Picture";
+            this.extractAlbumPictureToolStripMenuItem.Click += new System.EventHandler(this.extractAlbumPictureToolStripMenuItem_Click);
             // 
             // backgroundCopy
             // 
@@ -387,6 +398,7 @@
         private System.Windows.Forms.ToolStripMenuItem extractAllMusicToolStripMenuItem;
         private System.Windows.Forms.Label backgroundCopy;
         private System.Windows.Forms.ListBox SearchResult;
+        private System.Windows.Forms.ToolStripMenuItem extractAlbumPictureToolStripMenuItem;
     }
 }
 
