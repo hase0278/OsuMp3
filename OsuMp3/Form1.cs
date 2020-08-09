@@ -2,25 +2,44 @@
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Linq;
+using WMPLib;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace OsuMp3
 {
     public partial class Form1 : Form
     {
         #region member variables
-        private readonly WMPLib.WindowsMediaPlayer player = new WMPLib.WindowsMediaPlayer();
-        private static string path = @"C:\Osu!\Songs";
+        private readonly WindowsMediaPlayer player = new WindowsMediaPlayer();
+        private static string path;
         private bool isFound = false;
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
         private string playpause = "play";
-        private List<string> picPath = new List<string>();
+        private readonly List<string> picPath = new List<string>();
+
+        private const int SPI_SETDESKWALLPAPER = 20;
+        private const int SPIF_UPDATEINIFILE = 0x01;
+        private const int SPIF_SENDWININICHANGE = 0x02;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
         #endregion
         #region constructor
         public Form1()
         {
+            try
+            {
+                path = File.ReadAllText(@"path.conf");
+            }
+            catch(FileNotFoundException)
+            {
+                path = @"C:\osu!\Songs";
+                File.Create(@"path.conf").Close();
+                File.WriteAllText(@"path.conf", path);
+            }
             playNext.Tick += PlayNextEvent;
             timer.Tick += TimerEventProcessor;
             player.PlayStateChange += PlayStateChanged;
@@ -31,7 +50,7 @@ namespace OsuMp3
         private void Form1_Load(object sender, EventArgs e)
         {
             label1.Text = "Loading Audio Files. Please wait.";
-            setControlActivity(false);
+            SetControlActivity(false);
         }
         private void Form1_Shown(object sender, EventArgs e)
         {
@@ -90,7 +109,7 @@ namespace OsuMp3
                         continue;
                     }
                 }
-                setControlActivity(true);
+                SetControlActivity(true);
             }
             catch (DirectoryNotFoundException)
             {
@@ -179,13 +198,14 @@ namespace OsuMp3
         {
             if (path != pathBox.Text)
             {
+                File.WriteAllText(@"path.conf", pathBox.Text);
                 path = pathBox.Text;
             }
 
             FolderSetVisible(false);
             ok.Visible = false;
 
-            setControlActivity(false);
+            SetControlActivity(false);
             Form1_Shown(this, null);
         }
         private void FindBtn_Click(object sender, EventArgs e)
@@ -213,7 +233,7 @@ namespace OsuMp3
 
             if (!isFound)
             {
-                MessageBox.Show("Music Not Found!", "OSU Music");
+                MessageBox.Show("Music Not Found!", "Osu Music");
             }
         }
         private void PlayStateChanged(int newState)
@@ -331,9 +351,28 @@ namespace OsuMp3
                 SearchResult.Visible = false;
             }
         }
+        private void Volume_Scroll(object sender, EventArgs e)
+        {
+            player.settings.volume = volume.Value;
+        }
+        private void SetAlbumPictureAsWallpaperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(!picPath[nowPlaying.SelectedIndex].Equals("No Pic"))
+            {
+                setAsWallpaper(picPath[nowPlaying.SelectedIndex]);
+            }
+            else
+            {
+                Bitmap img = new Bitmap(Properties.Resources.circles);
+                img.Save(@Application.StartupPath + @"\album.jpg");
+                setAsWallpaper(@Application.StartupPath+@"\album.jpg");
+                File.Delete(@Application.StartupPath + @"\album.jpg");
+            }
+            
+        }
         #endregion
         #region methods
-        private void setControlActivity(bool state)
+        private void SetControlActivity(bool state)
         {
             play.Enabled = state;
             stop.Enabled = state;
@@ -377,17 +416,15 @@ namespace OsuMp3
             }
             catch (UnauthorizedAccessException)
             {
-                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "OSU Music");
+                MessageBox.Show("System denied permission to copy file on selected directory. Please select another directory.", "Osu Music");
             }
         }
-        #endregion
-
-        private void extractAlbumPictureToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExtractAlbumPictureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(picPath[nowPlaying.SelectedIndex].Equals("No Pic"))
+            if (picPath[nowPlaying.SelectedIndex].Equals("No Pic"))
             {
                 string savePath = OpenFileDiag("Select Your File Save Destination: ");
-                Properties.Resources.circles.Save(savePath+@"\"+"nekodex - circles.jpg");
+                Properties.Resources.circles.Save(savePath + @"\" + "nekodex - circles.jpg");
                 MessageBox.Show("jpg file extracted. Saved to: " + savePath, "Osu Music");
             }
             else
@@ -395,5 +432,18 @@ namespace OsuMp3
                 ExtractFile(picPath[nowPlaying.SelectedIndex], Path.GetFileName(Path.GetDirectoryName(picPath[nowPlaying.SelectedIndex]).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), Path.GetExtension(picPath[nowPlaying.SelectedIndex]));
             }
         }
+        private void setAsWallpaper(string imgPath)
+        {
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
+
+            key.SetValue(@"WallpaperStyle", 2.ToString());
+            key.SetValue(@"TileWallpaper", 0.ToString());
+            key.Close();
+
+            SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, @imgPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+            MessageBox.Show("Wallpaper set to " + @imgPath + ".", "Osu Music");
+
+        }
+        #endregion
     }
 }

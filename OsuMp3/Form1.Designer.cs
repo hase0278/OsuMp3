@@ -54,9 +54,13 @@
             this.next = new System.Windows.Forms.Button();
             this.stop = new System.Windows.Forms.Button();
             this.play = new System.Windows.Forms.Button();
+            this.volume = new System.Windows.Forms.TrackBar();
+            this.volumeLbl = new System.Windows.Forms.Label();
+            this.setAlbumPictureAsWallpaperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.volume)).BeginInit();
             this.SuspendLayout();
             // 
             // nowPlaying
@@ -198,7 +202,8 @@
             this.setOSUSongsFolderToolStripMenuItem,
             this.extractPlayingMusicToolStripMenuItem,
             this.extractAllMusicToolStripMenuItem,
-            this.extractAlbumPictureToolStripMenuItem});
+            this.extractAlbumPictureToolStripMenuItem,
+            this.setAlbumPictureAsWallpaperToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -207,7 +212,7 @@
             // 
             this.searchToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.SearchToolStripMenuItem_Click);
             // 
@@ -215,7 +220,7 @@
             // 
             this.setOSUSongsFolderToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.setOSUSongsFolderToolStripMenuItem.Name = "setOSUSongsFolderToolStripMenuItem";
-            this.setOSUSongsFolderToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.setOSUSongsFolderToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.setOSUSongsFolderToolStripMenuItem.Text = "Set OSU Songs Folder";
             this.setOSUSongsFolderToolStripMenuItem.Click += new System.EventHandler(this.SetOsuSongsFolderToolStripMenuItem_Click);
             // 
@@ -223,7 +228,7 @@
             // 
             this.extractPlayingMusicToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.extractPlayingMusicToolStripMenuItem.Name = "extractPlayingMusicToolStripMenuItem";
-            this.extractPlayingMusicToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.extractPlayingMusicToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.extractPlayingMusicToolStripMenuItem.Text = "Extract Playing Music";
             this.extractPlayingMusicToolStripMenuItem.Click += new System.EventHandler(this.ExtractPlayingMusicToolStripMenuItem_Click);
             // 
@@ -231,7 +236,7 @@
             // 
             this.extractAllMusicToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.extractAllMusicToolStripMenuItem.Name = "extractAllMusicToolStripMenuItem";
-            this.extractAllMusicToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.extractAllMusicToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.extractAllMusicToolStripMenuItem.Text = "Extract All Music";
             this.extractAllMusicToolStripMenuItem.Click += new System.EventHandler(this.ExtractAllMusicToolStripMenuItem_Click);
             // 
@@ -239,9 +244,9 @@
             // 
             this.extractAlbumPictureToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.extractAlbumPictureToolStripMenuItem.Name = "extractAlbumPictureToolStripMenuItem";
-            this.extractAlbumPictureToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.extractAlbumPictureToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.extractAlbumPictureToolStripMenuItem.Text = "Extract Album Picture";
-            this.extractAlbumPictureToolStripMenuItem.Click += new System.EventHandler(this.extractAlbumPictureToolStripMenuItem_Click);
+            this.extractAlbumPictureToolStripMenuItem.Click += new System.EventHandler(this.ExtractAlbumPictureToolStripMenuItem_Click);
             // 
             // backgroundCopy
             // 
@@ -325,6 +330,34 @@
             this.play.UseVisualStyleBackColor = false;
             this.play.Click += new System.EventHandler(this.Play_Click);
             // 
+            // volume
+            // 
+            this.volume.Location = new System.Drawing.Point(80, 380);
+            this.volume.Maximum = 100;
+            this.volume.Name = "volume";
+            this.volume.Size = new System.Drawing.Size(103, 45);
+            this.volume.TabIndex = 24;
+            this.volume.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.volume.Value = 100;
+            this.volume.Scroll += new System.EventHandler(this.Volume_Scroll);
+            // 
+            // volumeLbl
+            // 
+            this.volumeLbl.AutoSize = true;
+            this.volumeLbl.Location = new System.Drawing.Point(30, 386);
+            this.volumeLbl.Name = "volumeLbl";
+            this.volumeLbl.Size = new System.Drawing.Size(51, 13);
+            this.volumeLbl.TabIndex = 25;
+            this.volumeLbl.Text = "Volume : ";
+            // 
+            // setAlbumPictureAsWallpaperToolStripMenuItem
+            // 
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Name = "setAlbumPictureAsWallpaperToolStripMenuItem";
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Text = "Set Album Picture As Wallpaper";
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Click += new System.EventHandler(this.SetAlbumPictureAsWallpaperToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -332,6 +365,8 @@
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.volumeLbl);
+            this.Controls.Add(this.volume);
             this.Controls.Add(this.SearchResult);
             this.Controls.Add(this.backgroundCopy);
             this.Controls.Add(this.currentPosition);
@@ -367,6 +402,7 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.volume)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -399,6 +435,9 @@
         private System.Windows.Forms.Label backgroundCopy;
         private System.Windows.Forms.ListBox SearchResult;
         private System.Windows.Forms.ToolStripMenuItem extractAlbumPictureToolStripMenuItem;
+        private System.Windows.Forms.TrackBar volume;
+        private System.Windows.Forms.Label volumeLbl;
+        private System.Windows.Forms.ToolStripMenuItem setAlbumPictureAsWallpaperToolStripMenuItem;
     }
 }
 
