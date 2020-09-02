@@ -6,6 +6,7 @@ using WMPLib;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace OsuMp3
 {
@@ -18,7 +19,7 @@ namespace OsuMp3
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
         private string playpause = "play";
-        private readonly List<string> picPath = new List<string>();
+        private Dictionary<string, string> playListSongs = new Dictionary<string, string>();
 
         private const int SPI_SETDESKWALLPAPER = 20;
         private const int SPIF_UPDATEINIFILE = 0x01;
@@ -47,90 +48,11 @@ namespace OsuMp3
         }
         #endregion
         #region events
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            label1.Text = "Loading Audio Files. Please wait.";
-            SetControlActivity(false);
-        }
         private void Form1_Shown(object sender, EventArgs e)
         {
-            picPath.Clear();
-            nowPlaying.Items.Clear();
-            try
-            {
-                string line, file, temp = " ";
-                foreach(string osuFilePath in Directory.EnumerateFiles(path, "*.osu", SearchOption.AllDirectories))
-                {
-                    Application.DoEvents();
-                    try
-                    {
-                        using (StreamReader sr = new StreamReader(osuFilePath))
-                        {
-                            bool hasPic = false;
-
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                if (line.Contains("AudioFilename: "))
-                                {
-                                    if ((file = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(temp) || !line.Contains(".mp3"))
-                                    {
-                                        hasPic = true;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        nowPlaying.Items.Add(file);
-                                        temp = file;
-                                    }
-                                }
-                                else if (line.Contains("0,0,") && (line.Contains(".jpg") || line.Contains(".png") || line.Contains(".jpeg")))
-                                {
-                                    picPath.Add(Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { '"' }, 3)[1].TrimStart(' '));
-                                    hasPic = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                            }
-                            if (!hasPic)
-                            {
-                                picPath.Add("No Pic");
-                            }
-                            else
-                            {
-                                hasPic = false;
-                            }
-                        }
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        continue;
-                    }
-                }
-                SetControlActivity(true);
-            }
-            catch (DirectoryNotFoundException)
-            {
-                MessageBox.Show("Directory not found! Select OSU Songs Directory", "Osu Music");
-                Browse_Click(this, null);
-                Ok_Click(this, null);
-            }
+            loadPlaylist();
 
             pathBox.Text = path;
-
-            try
-            {
-                nowPlaying.SelectedIndex = 0;
-                label1.Text = "Now Playing";
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                MessageBox.Show("No MP3 file found on directory! Select OSU Songs Directory", "Osu Music");
-                Browse_Click(this, null);
-                Ok_Click(this, null);
-            }
         }
         private void Play_Click(object sender, EventArgs e)
         {
@@ -150,13 +72,13 @@ namespace OsuMp3
         private void NowPlaying_TextChanged(object sender, EventArgs e)
         {
             albumPicture.Image.Dispose();
-            if (picPath[nowPlaying.SelectedIndex] == "No Pic")
+            if (playListSongs[nowPlaying.Text] == "No Pic")
             {
                 albumPicture.Image = Properties.Resources.circles;
             }
             else
             {
-                albumPicture.Image = new Bitmap(@picPath[nowPlaying.SelectedIndex]);
+                albumPicture.Image = new Bitmap(@playListSongs[nowPlaying.Text]);
             }
             player.URL = nowPlaying.Text;       
             player.controls.stop();
@@ -357,9 +279,9 @@ namespace OsuMp3
         }
         private void SetAlbumPictureAsWallpaperToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!picPath[nowPlaying.SelectedIndex].Equals("No Pic"))
+            if(!playListSongs[nowPlaying.Text].Equals("No Pic"))
             {
-                setAsWallpaper(picPath[nowPlaying.SelectedIndex]);
+                setAsWallpaper(playListSongs[nowPlaying.Text]);
             }
             else
             {
@@ -372,6 +294,94 @@ namespace OsuMp3
         }
         #endregion
         #region methods
+        private void loadPlaylist()
+        {
+            label1.Text = "Loading Audio Files. Please wait.";
+            SetControlActivity(false);
+            playListSongs.Clear();
+            nowPlaying.Items.Clear();
+            try
+            {
+                string line, file, song = " ", pic = " ";
+                foreach (string osuFilePath in Directory.EnumerateFiles(path, "*.osu", SearchOption.AllDirectories))
+                {
+                    Application.DoEvents();
+                    try
+                    {
+                        using (StreamReader sr = new StreamReader(osuFilePath))
+                        {
+                            bool hasPic = false;
+
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                if (line.Contains("AudioFilename: "))
+                                {
+                                    if ((file = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(song) || !line.Contains(".mp3"))
+                                    {
+                                        hasPic = true;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        song = file;
+                                    }
+                                }
+                                else if (line.Contains("0,0,") && (line.Contains(".jpg") || line.Contains(".png") || line.Contains(".jpeg")))
+                                {
+                                    pic = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { '"' }, 3)[1].TrimStart(' ');
+                                    hasPic = true;
+                                    break;
+                                }
+                                else if (line.Equals("@//Break Periods"))
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            if (!hasPic)
+                            {
+                                playListSongs.Add(song, "No Pic");
+                            }
+                            else
+                            {
+                                if (!playListSongs.ContainsKey(song))
+                                {
+                                    playListSongs.Add(song, pic);
+                                }
+                                hasPic = false;
+                            }
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        continue;
+                    }
+                }
+                nowPlaying.Items.AddRange(playListSongs.Keys.ToArray());
+                SetControlActivity(true);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("Directory not found! Select OSU Songs Directory", "Osu Music");
+                Browse_Click(this, null);
+                Ok_Click(this, null);
+            }
+
+            try
+            {
+                nowPlaying.SelectedIndex = 0;
+                label1.Text = "Now Playing : Default Playlist";
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("No MP3 file found on directory! Select OSU Songs Directory", "Osu Music");
+                Browse_Click(this, null);
+                Ok_Click(this, null);
+            }
+        }
         private void SetControlActivity(bool state)
         {
             play.Enabled = state;
@@ -421,7 +431,7 @@ namespace OsuMp3
         }
         private void ExtractAlbumPictureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (picPath[nowPlaying.SelectedIndex].Equals("No Pic"))
+            if (playListSongs[nowPlaying.Text].Equals("No Pic"))
             {
                 string savePath = OpenFileDiag("Select Your File Save Destination: ");
                 Properties.Resources.circles.Save(savePath + @"\" + "nekodex - circles.jpg");
@@ -429,7 +439,7 @@ namespace OsuMp3
             }
             else
             {
-                ExtractFile(picPath[nowPlaying.SelectedIndex], Path.GetFileName(Path.GetDirectoryName(picPath[nowPlaying.SelectedIndex]).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), Path.GetExtension(picPath[nowPlaying.SelectedIndex]));
+                ExtractFile(playListSongs[nowPlaying.Text], Path.GetFileName(Path.GetDirectoryName(playListSongs[nowPlaying.Text]).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), Path.GetExtension(playListSongs[nowPlaying.Text]));
             }
         }
         private void setAsWallpaper(string imgPath)
