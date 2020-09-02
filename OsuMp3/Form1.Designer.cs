@@ -47,6 +47,11 @@
             this.extractPlayingMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAllMusicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAlbumPictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setAlbumPictureAsWallpaperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.playlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deletePlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSongToPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundCopy = new System.Windows.Forms.Label();
             this.SearchResult = new System.Windows.Forms.ListBox();
             this.albumPicture = new System.Windows.Forms.PictureBox();
@@ -56,7 +61,7 @@
             this.play = new System.Windows.Forms.Button();
             this.volume = new System.Windows.Forms.TrackBar();
             this.volumeLbl = new System.Windows.Forms.Label();
-            this.setAlbumPictureAsWallpaperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
@@ -188,7 +193,8 @@
             // 
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem});
+            this.optionsToolStripMenuItem,
+            this.playlistToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(800, 24);
@@ -247,6 +253,43 @@
             this.extractAlbumPictureToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.extractAlbumPictureToolStripMenuItem.Text = "Extract Album Picture";
             this.extractAlbumPictureToolStripMenuItem.Click += new System.EventHandler(this.ExtractAlbumPictureToolStripMenuItem_Click);
+            // 
+            // setAlbumPictureAsWallpaperToolStripMenuItem
+            // 
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Name = "setAlbumPictureAsWallpaperToolStripMenuItem";
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Text = "Set Album Picture As Wallpaper";
+            this.setAlbumPictureAsWallpaperToolStripMenuItem.Click += new System.EventHandler(this.SetAlbumPictureAsWallpaperToolStripMenuItem_Click);
+            // 
+            // playlistToolStripMenuItem
+            // 
+            this.playlistToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadToolStripMenuItem,
+            this.deletePlaylistToolStripMenuItem,
+            this.addSongToPlaylistToolStripMenuItem,
+            this.createPlaylistToolStripMenuItem});
+            this.playlistToolStripMenuItem.Name = "playlistToolStripMenuItem";
+            this.playlistToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.playlistToolStripMenuItem.Text = "Playlist";
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.loadToolStripMenuItem.Text = "Load Playlist";
+            // 
+            // deletePlaylistToolStripMenuItem
+            // 
+            this.deletePlaylistToolStripMenuItem.Name = "deletePlaylistToolStripMenuItem";
+            this.deletePlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.deletePlaylistToolStripMenuItem.Text = "Delete Playlist";
+            // 
+            // addSongToPlaylistToolStripMenuItem
+            // 
+            this.addSongToPlaylistToolStripMenuItem.Name = "addSongToPlaylistToolStripMenuItem";
+            this.addSongToPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.addSongToPlaylistToolStripMenuItem.Text = "Add This Song to Playlist";
             // 
             // backgroundCopy
             // 
@@ -350,13 +393,12 @@
             this.volumeLbl.TabIndex = 25;
             this.volumeLbl.Text = "Volume : ";
             // 
-            // setAlbumPictureAsWallpaperToolStripMenuItem
+            // createPlaylistToolStripMenuItem
             // 
-            this.setAlbumPictureAsWallpaperToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.setAlbumPictureAsWallpaperToolStripMenuItem.Name = "setAlbumPictureAsWallpaperToolStripMenuItem";
-            this.setAlbumPictureAsWallpaperToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
-            this.setAlbumPictureAsWallpaperToolStripMenuItem.Text = "Set Album Picture As Wallpaper";
-            this.setAlbumPictureAsWallpaperToolStripMenuItem.Click += new System.EventHandler(this.SetAlbumPictureAsWallpaperToolStripMenuItem_Click);
+            this.createPlaylistToolStripMenuItem.Name = "createPlaylistToolStripMenuItem";
+            this.createPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.createPlaylistToolStripMenuItem.Text = "Create Playlist";
+            this.createPlaylistToolStripMenuItem.Click += new System.EventHandler(this.createPlaylistToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -437,6 +479,11 @@
         private System.Windows.Forms.TrackBar volume;
         private System.Windows.Forms.Label volumeLbl;
         private System.Windows.Forms.ToolStripMenuItem setAlbumPictureAsWallpaperToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem playlistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deletePlaylistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSongToPlaylistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createPlaylistToolStripMenuItem;
     }
 }
 

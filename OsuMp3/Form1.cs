@@ -50,6 +50,7 @@ namespace OsuMp3
         #region events
         private void Form1_Shown(object sender, EventArgs e)
         {
+            loadExistingPlaylist();
             loadPlaylist();
 
             pathBox.Text = path;
@@ -360,7 +361,7 @@ namespace OsuMp3
                         continue;
                     }
                 }
-                nowPlaying.Items.AddRange(playListSongs.Keys.ToArray());
+                nowPlaying.DataSource = playListSongs.Keys.ToArray();
                 SetControlActivity(true);
             }
             catch (DirectoryNotFoundException)
@@ -452,6 +453,23 @@ namespace OsuMp3
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, @imgPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
             MessageBox.Show("Wallpaper set to " + @imgPath + ".", "Osu Music");
+
+        }
+        private void loadExistingPlaylist()
+        {
+            loadToolStripMenuItem.DropDownItems.Clear();
+            loadToolStripMenuItem.DropDownItems.Add("Default");
+            loadToolStripMenuItem.DropDownItems.Add("New 1");
+            deletePlaylistToolStripMenuItem.DropDownItems.Clear();
+            deletePlaylistToolStripMenuItem.DropDownItems.Add("New 1");
+            addSongToPlaylistToolStripMenuItem.DropDownItems.Clear();
+            addSongToPlaylistToolStripMenuItem.DropDownItems.Add("New 1");
+        }
+        #endregion
+
+        #region playlistToolStripEvents
+        private void createPlaylistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
         }
         #endregion
