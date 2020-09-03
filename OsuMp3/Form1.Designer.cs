@@ -278,18 +278,21 @@
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             this.loadToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.loadToolStripMenuItem.Text = "Load Playlist";
+            this.loadToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.loadToolStripMenuItem_DropDownItemClicked);
             // 
             // deletePlaylistToolStripMenuItem
             // 
             this.deletePlaylistToolStripMenuItem.Name = "deletePlaylistToolStripMenuItem";
             this.deletePlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.deletePlaylistToolStripMenuItem.Text = "Delete Playlist";
+            this.deletePlaylistToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.deletePlaylistToolStripMenuItem_DropDownItemClicked);
             // 
             // addSongToPlaylistToolStripMenuItem
             // 
             this.addSongToPlaylistToolStripMenuItem.Name = "addSongToPlaylistToolStripMenuItem";
             this.addSongToPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.addSongToPlaylistToolStripMenuItem.Text = "Add This Song to Playlist";
+            this.addSongToPlaylistToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.addSongToPlaylistToolStripMenuItem_DropDownItemClicked);
             // 
             // backgroundCopy
             // 

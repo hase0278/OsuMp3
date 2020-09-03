@@ -455,22 +455,56 @@ namespace OsuMp3
             MessageBox.Show("Wallpaper set to " + @imgPath + ".", "Osu Music");
 
         }
-        private void loadExistingPlaylist()
+        public void loadExistingPlaylist()
         {
             loadToolStripMenuItem.DropDownItems.Clear();
-            loadToolStripMenuItem.DropDownItems.Add("Default");
-            loadToolStripMenuItem.DropDownItems.Add("New 1");
             deletePlaylistToolStripMenuItem.DropDownItems.Clear();
-            deletePlaylistToolStripMenuItem.DropDownItems.Add("New 1");
             addSongToPlaylistToolStripMenuItem.DropDownItems.Clear();
-            addSongToPlaylistToolStripMenuItem.DropDownItems.Add("New 1");
+            loadToolStripMenuItem.DropDownItems.Add("Default");
+            foreach(string osuPlaylistFile in Directory.EnumerateFiles(Application.StartupPath, "*.ompl"))
+            {
+                loadToolStripMenuItem.DropDownItems.Add(Path.GetFileNameWithoutExtension(osuPlaylistFile));
+                deletePlaylistToolStripMenuItem.DropDownItems.Add(Path.GetFileNameWithoutExtension(osuPlaylistFile));
+                addSongToPlaylistToolStripMenuItem.DropDownItems.Add(Path.GetFileNameWithoutExtension(osuPlaylistFile));
+            }
         }
         #endregion
 
         #region playlistToolStripEvents
         private void createPlaylistToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            CreatePlaylist createPlaylistWindow = new CreatePlaylist();
+            createPlaylistWindow.FormClosing += new FormClosingEventHandler(CreatePlaylist_Closing);
+            createPlaylistWindow.ShowDialog(this);
+        }
+        private void CreatePlaylist_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            loadExistingPlaylist();
+        }
+        private void loadToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            MessageBox.Show(e.ClickedItem.Text);
+        }
 
+        private void deletePlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                File.Delete(Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl");
+                MessageBox.Show("Playlist "+e.ClickedItem.Text + " has been deleted.", "Osu Music");
+                loadExistingPlaylist();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("An error occurred while deleting playlist.", "Osus Music");
+            }
+            
+
+        }
+
+        private void addSongToPlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            MessageBox.Show(e.ClickedItem.Text);
         }
         #endregion
     }
