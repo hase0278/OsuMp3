@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Linq;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace OsuMp3
 {
@@ -300,16 +301,42 @@ namespace OsuMp3
             label1.Text = "Loading Audio Files. Please wait.";
             SetControlActivity(false);
             playListSongs.Clear();
-            nowPlaying.Items.Clear();
+            loader(path);
+
+            try
+            {
+                nowPlaying.DataSource = playListSongs.Keys.ToArray();
+                nowPlaying.SelectedIndex = 0;
+                label1.Text = "Now Playing : Default Playlist";
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("No MP3 file found on directory! Select OSU Songs Directory", "Osu Music");
+                Browse_Click(this, null);
+                Ok_Click(this, null);
+            }
+        }
+        private void loader(string localPath)
+        {
+
             try
             {
                 string line, file, song = " ", pic = " ";
-                foreach (string osuFilePath in Directory.EnumerateFiles(path, "*.osu", SearchOption.AllDirectories))
+                SearchOption optionSearch;
+                if (localPath.Equals(path))
+                {
+                    optionSearch = SearchOption.AllDirectories;
+                }
+                else
+                {
+                    optionSearch = SearchOption.TopDirectoryOnly;
+                }
+                foreach (string osuFile in Directory.EnumerateFiles(Path.GetDirectoryName(localPath), "*.osu", optionSearch))
                 {
                     Application.DoEvents();
                     try
                     {
-                        using (StreamReader sr = new StreamReader(osuFilePath))
+                        using (StreamReader sr = new StreamReader(osuFile))
                         {
                             bool hasPic = false;
 
@@ -317,7 +344,19 @@ namespace OsuMp3
                             {
                                 if (line.Contains("AudioFilename: "))
                                 {
-                                    if ((file = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(song) || !line.Contains(".mp3"))
+                                    if (localPath.Contains(".mp3"))
+                                    {
+                                        if (line.Contains(Path.GetFileName(localPath)))
+                                        {
+                                            song = localPath;
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            throw new RuntimeBinderException();
+                                        }
+                                    }
+                                    if ((file = Path.GetDirectoryName(osuFile) + @"\" + line.Split(new char[] { ' ' }, 2)[1]).Equals(song) || !line.Contains(".mp3"))
                                     {
                                         hasPic = true;
                                         break;
@@ -329,7 +368,7 @@ namespace OsuMp3
                                 }
                                 else if (line.Contains("0,0,") && (line.Contains(".jpg") || line.Contains(".png") || line.Contains(".jpeg")))
                                 {
-                                    pic = Path.GetDirectoryName(osuFilePath) + @"\" + line.Split(new char[] { '"' }, 3)[1].TrimStart(' ');
+                                    pic = Path.GetDirectoryName(osuFile) + @"\" + line.Split(new char[] { '"' }, 3)[1].TrimStart(' ');
                                     hasPic = true;
                                     break;
                                 }
@@ -360,8 +399,15 @@ namespace OsuMp3
                     {
                         continue;
                     }
+                    catch (RuntimeBinderException)
+                    {
+                        continue;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        MessageBox.Show(localPath + " not found.", "Osu Music");
+                    }
                 }
-                nowPlaying.DataSource = playListSongs.Keys.ToArray();
                 SetControlActivity(true);
             }
             catch (DirectoryNotFoundException)
@@ -370,17 +416,28 @@ namespace OsuMp3
                 Browse_Click(this, null);
                 Ok_Click(this, null);
             }
+        }
+        private void loadPlaylist(string playListName)
+        {
+            playListSongs.Clear();
+            label1.Text = "Loading Audio Files. Please wait.";
+            SetControlActivity(false);
+            
+            foreach(string localPath in playlistFileReader(playListName))
+            {
+                loader(localPath);
+            }
 
             try
             {
+                nowPlaying.DataSource = playListSongs.Keys.ToArray();
                 nowPlaying.SelectedIndex = 0;
-                label1.Text = "Now Playing : Default Playlist";
+                label1.Text = "Now Playing : " + playListName +" Playlist";
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show("No MP3 file found on directory! Select OSU Songs Directory", "Osu Music");
-                Browse_Click(this, null);
-                Ok_Click(this, null);
+                MessageBox.Show("No MP3 file found on playlist! Loading Default Playlist", "Osu Music");
+                loadPlaylist();
             }
         }
         private void SetControlActivity(bool state)
@@ -468,6 +525,26 @@ namespace OsuMp3
                 addSongToPlaylistToolStripMenuItem.DropDownItems.Add(Path.GetFileNameWithoutExtension(osuPlaylistFile));
             }
         }
+        private string[] playlistFileReader(String fileName)
+        {
+            List<string> paths = new List<String>();
+            string line = "";
+            using (StreamReader sr = new StreamReader(Application.StartupPath+@"\"+fileName+".ompl"))
+            {
+                while ((line = sr.ReadLine()) != null)
+                {
+                    paths.Add(line);
+                }
+            }
+            return paths.ToArray();
+        }
+        private void playlistFileWriter(string fileName, string toWriteContent, bool doNotOverwrite)
+        {
+            using (StreamWriter sw = new StreamWriter(fileName, doNotOverwrite))
+            {
+                sw.WriteLine(toWriteContent);
+            }
+        }
         #endregion
 
         #region playlistToolStripEvents
@@ -483,28 +560,53 @@ namespace OsuMp3
         }
         private void loadToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            MessageBox.Show(e.ClickedItem.Text);
+            if (e.ClickedItem.Text.Equals("Default"))
+            {
+                loadPlaylist();
+            }
+            else
+            {
+                loadPlaylist(e.ClickedItem.Text);
+            } 
         }
 
         private void deletePlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             try
             {
+                if (label1.Text.Contains(e.ClickedItem.Text))
+                {
+                    throw new FileLoadException();
+                }
                 File.Delete(Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl");
                 MessageBox.Show("Playlist "+e.ClickedItem.Text + " has been deleted.", "Osu Music");
                 loadExistingPlaylist();
             }
             catch (Exception)
             {
-                MessageBox.Show("An error occurred while deleting playlist.", "Osus Music");
+                MessageBox.Show("An error occurred while deleting playlist.", "Osu Music");
             }
-            
-
         }
 
         private void addSongToPlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            MessageBox.Show(e.ClickedItem.Text);
+            try
+            {
+                foreach (string path in playlistFileReader(e.ClickedItem.Text))
+                {
+                    if (Path.GetDirectoryName(nowPlaying.Text).Equals(path))
+                    {
+                        throw new FileNotFoundException();
+                    }
+                }
+                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", nowPlaying.Text, true);
+                MessageBox.Show("Song added in selected playlist.", "Osu Music");
+
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Song already added in selected playlist.", "Osu Music");
+            } 
         }
         #endregion
     }
