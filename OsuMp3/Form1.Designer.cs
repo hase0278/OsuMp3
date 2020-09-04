@@ -52,6 +52,7 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deletePlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSongToPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundCopy = new System.Windows.Forms.Label();
             this.SearchResult = new System.Windows.Forms.ListBox();
             this.albumPicture = new System.Windows.Forms.PictureBox();
@@ -61,7 +62,6 @@
             this.play = new System.Windows.Forms.Button();
             this.volume = new System.Windows.Forms.TrackBar();
             this.volumeLbl = new System.Windows.Forms.Label();
-            this.createPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
@@ -265,10 +265,10 @@
             // playlistToolStripMenuItem
             // 
             this.playlistToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createPlaylistToolStripMenuItem,
             this.loadToolStripMenuItem,
             this.deletePlaylistToolStripMenuItem,
-            this.addSongToPlaylistToolStripMenuItem,
-            this.createPlaylistToolStripMenuItem});
+            this.addSongToPlaylistToolStripMenuItem});
             this.playlistToolStripMenuItem.Name = "playlistToolStripMenuItem";
             this.playlistToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.playlistToolStripMenuItem.Text = "Playlist";
@@ -293,6 +293,13 @@
             this.addSongToPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.addSongToPlaylistToolStripMenuItem.Text = "Add This Song to Playlist";
             this.addSongToPlaylistToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.addSongToPlaylistToolStripMenuItem_DropDownItemClicked);
+            // 
+            // createPlaylistToolStripMenuItem
+            // 
+            this.createPlaylistToolStripMenuItem.Name = "createPlaylistToolStripMenuItem";
+            this.createPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.createPlaylistToolStripMenuItem.Text = "Create Playlist";
+            this.createPlaylistToolStripMenuItem.Click += new System.EventHandler(this.createPlaylistToolStripMenuItem_Click);
             // 
             // backgroundCopy
             // 
@@ -396,13 +403,6 @@
             this.volumeLbl.TabIndex = 25;
             this.volumeLbl.Text = "Volume : ";
             // 
-            // createPlaylistToolStripMenuItem
-            // 
-            this.createPlaylistToolStripMenuItem.Name = "createPlaylistToolStripMenuItem";
-            this.createPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.createPlaylistToolStripMenuItem.Text = "Create Playlist";
-            this.createPlaylistToolStripMenuItem.Click += new System.EventHandler(this.createPlaylistToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -485,8 +485,8 @@
         private System.Windows.Forms.ToolStripMenuItem playlistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deletePlaylistToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addSongToPlaylistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createPlaylistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSongToPlaylistToolStripMenuItem;
     }
 }
 

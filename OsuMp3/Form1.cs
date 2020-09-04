@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Microsoft.CSharp.RuntimeBinder;
+using System.Text;
 
 namespace OsuMp3
 {
@@ -15,6 +16,7 @@ namespace OsuMp3
     {
         #region member variables
         private readonly WindowsMediaPlayer player = new WindowsMediaPlayer();
+        private ToolStripMenuItem deleteFromPlaylist = new ToolStripMenuItem("Delete Song From Playlist");
         private static string path;
         private bool isFound = false;
         private readonly Timer timer = new Timer();
@@ -45,10 +47,12 @@ namespace OsuMp3
             playNext.Tick += PlayNextEvent;
             timer.Tick += TimerEventProcessor;
             player.PlayStateChange += PlayStateChanged;
+            deleteFromPlaylist.Click += deleteToolStripClicked;
             InitializeComponent();
         }
         #endregion
         #region events
+        #region normal events
         private void Form1_Shown(object sender, EventArgs e)
         {
             loadExistingPlaylist();
@@ -292,8 +296,99 @@ namespace OsuMp3
                 setAsWallpaper(@Application.StartupPath+@"\album.jpg");
                 File.Delete(@Application.StartupPath + @"\album.jpg");
             }
-            
         }
+        #endregion
+        #region playlistToolStripEvents
+        private void createPlaylistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CreatePlaylist createPlaylistWindow = new CreatePlaylist();
+            createPlaylistWindow.FormClosing += new FormClosingEventHandler(CreatePlaylist_Closing);
+            createPlaylistWindow.ShowDialog(this);
+        }
+        private void CreatePlaylist_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            loadExistingPlaylist();
+        }
+        private void loadToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (e.ClickedItem.Text.Equals("Default"))
+            {
+                loadPlaylist();
+            }
+            else
+            {
+                loadPlaylist(e.ClickedItem.Text);
+                playlistToolStripMenuItem.DropDownItems.Add(deleteFromPlaylist);
+            }
+        }
+        private void deletePlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                if (label1.Text.Contains(e.ClickedItem.Text))
+                {
+                    throw new FileLoadException();
+                }
+                File.Delete(Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl");
+                MessageBox.Show("Playlist " + e.ClickedItem.Text + " has been deleted.", "Osu Music");
+                loadExistingPlaylist();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("An error occurred while deleting playlist.", "Osu Music");
+            }
+        }
+
+        private void addSongToPlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                foreach (string path in playlistFileReader(e.ClickedItem.Text))
+                {
+                    if (Path.GetDirectoryName(nowPlaying.Text).Equals(path))
+                    {
+                        throw new FileNotFoundException();
+                    }
+                }
+                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", nowPlaying.Text, true);
+                MessageBox.Show("Song added in selected playlist.", "Osu Music");
+
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Song already added in selected playlist.", "Osu Music");
+            }
+        }
+        private void deleteToolStripClicked(object sender, EventArgs e)
+        {
+            List<String> toWrite = new List<string>();
+            string playlistName = label1.Text.TrimStart("Now Playing Playlist: ".ToCharArray());
+            foreach (string oldContent in playlistFileReader(playlistName))
+            {
+                if (oldContent.Equals(nowPlaying.Text))
+                {
+                    continue;
+                }
+                else
+                {
+                    toWrite.Add(oldContent);
+                } 
+            }
+            for(int index = 0; index < toWrite.Count; index++)
+            {
+                if (toWrite[index].Equals(toWrite[0]))
+                {
+                    playlistFileWriter(playlistName+".ompl", toWrite[index], false);
+                }
+                else
+                {
+                    playlistFileWriter(playlistName+".ompl", toWrite[index], true);
+                }
+            }
+            MessageBox.Show("Song removed from playlist. Current playlist reload started.", "Osu Music");
+            loadPlaylist(playlistName);
+        }
+        #endregion
         #endregion
         #region methods
         private void loadPlaylist()
@@ -302,12 +397,11 @@ namespace OsuMp3
             SetControlActivity(false);
             playListSongs.Clear();
             loader(path);
-
             try
             {
                 nowPlaying.DataSource = playListSongs.Keys.ToArray();
                 nowPlaying.SelectedIndex = 0;
-                label1.Text = "Now Playing : Default Playlist";
+                label1.Text = "Now Playing : Default";
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -315,10 +409,18 @@ namespace OsuMp3
                 Browse_Click(this, null);
                 Ok_Click(this, null);
             }
+            try
+            {
+                playlistToolStripMenuItem.DropDownItems.RemoveAt(4);
+            }
+            catch(ArgumentOutOfRangeException)
+            {
+                //Do nothing
+            }
+
         }
         private void loader(string localPath)
         {
-
             try
             {
                 string line, file, song = " ", pic = " ";
@@ -432,7 +534,7 @@ namespace OsuMp3
             {
                 nowPlaying.DataSource = playListSongs.Keys.ToArray();
                 nowPlaying.SelectedIndex = 0;
-                label1.Text = "Now Playing : " + playListName +" Playlist";
+                label1.Text = "Now Playing Playlist: " + playListName;
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -544,69 +646,6 @@ namespace OsuMp3
             {
                 sw.WriteLine(toWriteContent);
             }
-        }
-        #endregion
-
-        #region playlistToolStripEvents
-        private void createPlaylistToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            CreatePlaylist createPlaylistWindow = new CreatePlaylist();
-            createPlaylistWindow.FormClosing += new FormClosingEventHandler(CreatePlaylist_Closing);
-            createPlaylistWindow.ShowDialog(this);
-        }
-        private void CreatePlaylist_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            loadExistingPlaylist();
-        }
-        private void loadToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            if (e.ClickedItem.Text.Equals("Default"))
-            {
-                loadPlaylist();
-            }
-            else
-            {
-                loadPlaylist(e.ClickedItem.Text);
-            } 
-        }
-
-        private void deletePlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            try
-            {
-                if (label1.Text.Contains(e.ClickedItem.Text))
-                {
-                    throw new FileLoadException();
-                }
-                File.Delete(Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl");
-                MessageBox.Show("Playlist "+e.ClickedItem.Text + " has been deleted.", "Osu Music");
-                loadExistingPlaylist();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("An error occurred while deleting playlist.", "Osu Music");
-            }
-        }
-
-        private void addSongToPlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            try
-            {
-                foreach (string path in playlistFileReader(e.ClickedItem.Text))
-                {
-                    if (Path.GetDirectoryName(nowPlaying.Text).Equals(path))
-                    {
-                        throw new FileNotFoundException();
-                    }
-                }
-                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", nowPlaying.Text, true);
-                MessageBox.Show("Song added in selected playlist.", "Osu Music");
-
-            }
-            catch (FileNotFoundException)
-            {
-                MessageBox.Show("Song already added in selected playlist.", "Osu Music");
-            } 
         }
         #endregion
     }
