@@ -17,7 +17,7 @@ namespace OsuMp3
             {
                 File.Create(Application.StartupPath + @"\" + playlistName.Text + ".ompl");
                 MessageBox.Show("Playlist created.", "Osu Music");
-                Form1 osuMain = new Form1();
+                songsCheckList osuMain = new songsCheckList();
                 osuMain.loadExistingPlaylist();
                 this.Close();
             }

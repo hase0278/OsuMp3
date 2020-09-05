@@ -1,6 +1,6 @@
 ﻿namespace OsuMp3
 {
-    partial class Form1
+    partial class songsCheckList
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(songsCheckList));
             this.nowPlaying = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.pathlbl = new System.Windows.Forms.Label();
@@ -49,10 +49,10 @@
             this.extractAlbumPictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAlbumPictureAsWallpaperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deletePlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSongToPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createPlaylistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundCopy = new System.Windows.Forms.Label();
             this.SearchResult = new System.Windows.Forms.ListBox();
             this.albumPicture = new System.Windows.Forms.PictureBox();
@@ -62,6 +62,9 @@
             this.play = new System.Windows.Forms.Button();
             this.volume = new System.Windows.Forms.TrackBar();
             this.volumeLbl = new System.Windows.Forms.Label();
+            this.songListBox = new System.Windows.Forms.CheckedListBox();
+            this.multipleListBoxLbl = new System.Windows.Forms.Label();
+            this.actionSelectBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
@@ -273,6 +276,13 @@
             this.playlistToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.playlistToolStripMenuItem.Text = "Playlist";
             // 
+            // createPlaylistToolStripMenuItem
+            // 
+            this.createPlaylistToolStripMenuItem.Name = "createPlaylistToolStripMenuItem";
+            this.createPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.createPlaylistToolStripMenuItem.Text = "Create Playlist";
+            this.createPlaylistToolStripMenuItem.Click += new System.EventHandler(this.createPlaylistToolStripMenuItem_Click);
+            // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
@@ -293,13 +303,6 @@
             this.addSongToPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.addSongToPlaylistToolStripMenuItem.Text = "Add This Song to Playlist";
             this.addSongToPlaylistToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.addSongToPlaylistToolStripMenuItem_DropDownItemClicked);
-            // 
-            // createPlaylistToolStripMenuItem
-            // 
-            this.createPlaylistToolStripMenuItem.Name = "createPlaylistToolStripMenuItem";
-            this.createPlaylistToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.createPlaylistToolStripMenuItem.Text = "Create Playlist";
-            this.createPlaylistToolStripMenuItem.Click += new System.EventHandler(this.createPlaylistToolStripMenuItem_Click);
             // 
             // backgroundCopy
             // 
@@ -403,13 +406,46 @@
             this.volumeLbl.TabIndex = 25;
             this.volumeLbl.Text = "Volume : ";
             // 
-            // Form1
+            // songListBox
+            // 
+            this.songListBox.FormattingEnabled = true;
+            this.songListBox.Location = new System.Drawing.Point(34, 66);
+            this.songListBox.Name = "songListBox";
+            this.songListBox.Size = new System.Drawing.Size(720, 349);
+            this.songListBox.TabIndex = 26;
+            this.songListBox.Visible = false;
+            // 
+            // multipleListBoxLbl
+            // 
+            this.multipleListBoxLbl.AutoSize = true;
+            this.multipleListBoxLbl.Location = new System.Drawing.Point(33, 41);
+            this.multipleListBoxLbl.Name = "multipleListBoxLbl";
+            this.multipleListBoxLbl.Size = new System.Drawing.Size(10, 13);
+            this.multipleListBoxLbl.TabIndex = 27;
+            this.multipleListBoxLbl.Text = " ";
+            // 
+            // actionSelectBtn
+            // 
+            this.actionSelectBtn.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.actionSelectBtn.Location = new System.Drawing.Point(366, 418);
+            this.actionSelectBtn.Name = "actionSelectBtn";
+            this.actionSelectBtn.Size = new System.Drawing.Size(75, 23);
+            this.actionSelectBtn.TabIndex = 28;
+            this.actionSelectBtn.Text = "button1";
+            this.actionSelectBtn.UseVisualStyleBackColor = false;
+            this.actionSelectBtn.Visible = false;
+            this.actionSelectBtn.Click += new System.EventHandler(this.actionSelectBtn_Click);
+            // 
+            // songsCheckList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.actionSelectBtn);
+            this.Controls.Add(this.multipleListBoxLbl);
+            this.Controls.Add(this.songListBox);
             this.Controls.Add(this.volumeLbl);
             this.Controls.Add(this.volume);
             this.Controls.Add(this.SearchResult);
@@ -438,7 +474,7 @@
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(816, 489);
             this.MinimumSize = new System.Drawing.Size(816, 489);
-            this.Name = "Form1";
+            this.Name = "songsCheckList";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Osu Music";
             this.Shown += new System.EventHandler(this.Form1_Shown);
@@ -487,6 +523,9 @@
         private System.Windows.Forms.ToolStripMenuItem deletePlaylistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createPlaylistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addSongToPlaylistToolStripMenuItem;
+        private System.Windows.Forms.CheckedListBox songListBox;
+        private System.Windows.Forms.Label multipleListBoxLbl;
+        private System.Windows.Forms.Button actionSelectBtn;
     }
 }
 

@@ -8,20 +8,22 @@ using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Microsoft.CSharp.RuntimeBinder;
-using System.Text;
 
 namespace OsuMp3
 {
-    public partial class Form1 : Form
+    public partial class songsCheckList : Form
     {
         #region member variables
         private readonly WindowsMediaPlayer player = new WindowsMediaPlayer();
-        private ToolStripMenuItem deleteFromPlaylist = new ToolStripMenuItem("Delete Song From Playlist");
+        private ToolStripMenuItem addMultipleToPlaylist = new ToolStripMenuItem("Add songs to current playlist");
+        private ToolStripMenuItem deleteMultipleSongToPlaylist = new ToolStripMenuItem("Delete songs from current playlist");
+        private ToolStripMenuItem deleteFromPlaylist = new ToolStripMenuItem("Delete song from playlist");
         private static string path;
         private bool isFound = false;
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
         private string playpause = "play";
+        private List<string> addMultipleSong = new List<string>();
         private Dictionary<string, string> playListSongs = new Dictionary<string, string>();
 
         private const int SPI_SETDESKWALLPAPER = 20;
@@ -32,7 +34,7 @@ namespace OsuMp3
         private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
         #endregion
         #region constructor
-        public Form1()
+        public songsCheckList()
         {
             try
             {
@@ -48,6 +50,8 @@ namespace OsuMp3
             timer.Tick += TimerEventProcessor;
             player.PlayStateChange += PlayStateChanged;
             deleteFromPlaylist.Click += deleteToolStripClicked;
+            addMultipleToPlaylist.Click += AddMultipleSongsToolStripClicked;
+            deleteMultipleSongToPlaylist.Click += DeleteMultipleSongsToolStripClicked;
             InitializeComponent();
         }
         #endregion
@@ -319,6 +323,8 @@ namespace OsuMp3
             {
                 loadPlaylist(e.ClickedItem.Text);
                 playlistToolStripMenuItem.DropDownItems.Add(deleteFromPlaylist);
+                playlistToolStripMenuItem.DropDownItems.Add(addMultipleToPlaylist);
+                playlistToolStripMenuItem.DropDownItems.Add(deleteMultipleSongToPlaylist);
             }
         }
         private void deletePlaylistToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -361,7 +367,7 @@ namespace OsuMp3
         }
         private void deleteToolStripClicked(object sender, EventArgs e)
         {
-            List<String> toWrite = new List<string>();
+            List<string> toWrite = new List<string>();
             string playlistName = label1.Text.TrimStart("Now Playing Playlist: ".ToCharArray());
             foreach (string oldContent in playlistFileReader(playlistName))
             {
@@ -388,11 +394,27 @@ namespace OsuMp3
             MessageBox.Show("Song removed from playlist. Current playlist reload started.", "Osu Music");
             loadPlaylist(playlistName);
         }
+        private void AddMultipleSongsToolStripClicked(object sender, EventArgs e)
+        {
+            setSelectVisible("Add", true, addMultipleSong.ToArray());
+        }
+        private void DeleteMultipleSongsToolStripClicked(object sender, EventArgs e)
+        {
+            setSelectVisible("Delete", true, playListSongs.Keys.ToArray());
+        }
+        private void actionSelectBtn_Click(object sender, EventArgs e)
+        {
+            setSelectVisible("", false, null);
+        }
         #endregion
         #endregion
         #region methods
         private void loadPlaylist()
         {
+            if(addMultipleSong.Count != 0)
+            {
+                addMultipleSong.Clear();
+            }
             label1.Text = "Loading Audio Files. Please wait.";
             SetControlActivity(false);
             playListSongs.Clear();
@@ -411,7 +433,9 @@ namespace OsuMp3
             }
             try
             {
-                playlistToolStripMenuItem.DropDownItems.RemoveAt(4);
+                playlistToolStripMenuItem.DropDownItems.Remove(deleteFromPlaylist);
+                playlistToolStripMenuItem.DropDownItems.Remove(addMultipleToPlaylist);
+                playlistToolStripMenuItem.DropDownItems.Remove(deleteMultipleSongToPlaylist);
             }
             catch(ArgumentOutOfRangeException)
             {
@@ -450,6 +474,7 @@ namespace OsuMp3
                                     {
                                         if (line.Contains(Path.GetFileName(localPath)))
                                         {
+                                            addMultipleSong.Remove(song);
                                             song = localPath;
                                             continue;
                                         }
@@ -521,6 +546,11 @@ namespace OsuMp3
         }
         private void loadPlaylist(string playListName)
         {
+
+            if (label1.Text.Contains("Default"))
+            {
+                addMultipleSong.AddRange(playListSongs.Keys.ToArray());
+            }
             playListSongs.Clear();
             label1.Text = "Loading Audio Files. Please wait.";
             SetControlActivity(false);
@@ -627,9 +657,9 @@ namespace OsuMp3
                 addSongToPlaylistToolStripMenuItem.DropDownItems.Add(Path.GetFileNameWithoutExtension(osuPlaylistFile));
             }
         }
-        private string[] playlistFileReader(String fileName)
+        private string[] playlistFileReader(string fileName)
         {
-            List<string> paths = new List<String>();
+            List<string> paths = new List<string>();
             string line = "";
             using (StreamReader sr = new StreamReader(Application.StartupPath+@"\"+fileName+".ompl"))
             {
@@ -646,6 +676,22 @@ namespace OsuMp3
             {
                 sw.WriteLine(toWriteContent);
             }
+        }
+        private void setSelectVisible(string action, bool visibility, string[] source)
+        {
+            multipleListBoxLbl.Text = "Select songs to " + action.ToLower() + " on playlist";
+            songListBox.Visible = visibility;
+            actionSelectBtn.Text = action;
+            actionSelectBtn.Visible = visibility;
+            multipleListBoxLbl.Visible = visibility;
+            try
+            {
+                songListBox.Items.AddRange(source);
+            }
+            catch (ArgumentNullException)
+            {
+                songListBox.Items.Clear();
+            }     
         }
         #endregion
     }
