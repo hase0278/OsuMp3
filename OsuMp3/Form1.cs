@@ -368,7 +368,7 @@ namespace OsuMp3
         private void deleteToolStripClicked(object sender, EventArgs e)
         {
             List<string> toWrite = new List<string>();
-            string playlistName = label1.Text.TrimStart("Now Playing Playlist: ".ToCharArray());
+            string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
             foreach (string oldContent in playlistFileReader(playlistName))
             {
                 if (oldContent.Equals(nowPlaying.Text))
@@ -404,6 +404,44 @@ namespace OsuMp3
         }
         private void actionSelectBtn_Click(object sender, EventArgs e)
         {
+            if (multipleListBoxLbl.Text.ToLower().Contains("add"))
+            {
+                foreach(string toWrite in songListBox.CheckedItems)
+                {
+                    playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", toWrite, true);
+                }
+                MessageBox.Show("Songs added in selected playlist. Refreshing", "Osu Music");
+                loadPlaylist(label1.Text.Replace("Now Playing Playlist: ", ""));
+            }else if (multipleListBoxLbl.Text.ToLower().Contains("delete"))
+            {
+
+                List<string> toWrite = new List<string>();
+                string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
+                foreach (string oldContent in playlistFileReader(playlistName))
+                {
+                    if (songListBox.CheckedItems.Contains(oldContent))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        toWrite.Add(oldContent);
+                    }
+                }
+                for (int index = 0; index < toWrite.Count; index++)
+                {
+                    if (toWrite[index].Equals(toWrite[0]))
+                    {
+                        playlistFileWriter(playlistName + ".ompl", toWrite[index], false);
+                    }
+                    else
+                    {
+                        playlistFileWriter(playlistName + ".ompl", toWrite[index], true);
+                    }
+                }
+                MessageBox.Show("Song removed from playlist. Current playlist reload started.", "Osu Music");
+                loadPlaylist(playlistName);
+            }
             setSelectVisible("", false, null);
         }
         #endregion
