@@ -248,8 +248,7 @@ namespace OsuMp3
                 {
                     if(File.Exists(@savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString())) + ".mp3"))
                     {
-                        MessageBox.Show(Path.GetFileName(nowPlaying.Items[x].ToString()));
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()) + ".mp3", false);
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()), false);
                     }
                     else
                     {
