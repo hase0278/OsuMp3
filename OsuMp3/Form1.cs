@@ -147,7 +147,7 @@ namespace OsuMp3
             SearchResult.Visible = false;
             for (int x = 0; x < nowPlaying.Items.Count; x++)
             {
-                if (nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.Trim(".mp3".ToCharArray()).ToLower()))
+                if (nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.Replace(".mp3", "").ToLower()))
                 {
                     SearchResult.Visible = true;
                     isFound = true;
@@ -226,7 +226,7 @@ namespace OsuMp3
         }
         private void ExtractPlayingMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractFile(nowPlaying.Text, Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), ".mp3");
+            ExtractFile(nowPlaying.Text, Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), ".mp3");
         }
         private void ExtractAllMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -246,19 +246,21 @@ namespace OsuMp3
                 backgroundCopy.Text = "Files copying on background... \r\n" + (x+1) + " out of " + nowPlaying.Items.Count + " copied \r\n"+error+" failed"; ;
                 try
                 {
-                    if(File.Exists(@savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3"))
+                    if(File.Exists(@savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString())) + ".mp3"))
                     {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + "_"+ x +".mp3", false);
+                        MessageBox.Show(Path.GetFileName(nowPlaying.Items[x].ToString()));
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()) + ".mp3", false);
                     }
                     else
                     {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString()).Trim(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')) + ".mp3", false);
+                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString())) + ".mp3", false);
                     }
                     success++;
                 }
                 catch (Exception)
                 {
                     error++;
+                    continue;
                 }
 
                 if (x == nowPlaying.Items.Count - 1)
@@ -272,7 +274,7 @@ namespace OsuMp3
         {
             if(SearchResult.Text.Trim(' ') == "")
             {
-
+                //Do nothing
             }
             else
             {

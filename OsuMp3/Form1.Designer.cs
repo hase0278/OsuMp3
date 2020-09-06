@@ -167,7 +167,7 @@
             // searchlbl
             // 
             this.searchlbl.AutoSize = true;
-            this.searchlbl.Location = new System.Drawing.Point(-1, 42);
+            this.searchlbl.Location = new System.Drawing.Point(6, 38);
             this.searchlbl.Name = "searchlbl";
             this.searchlbl.Size = new System.Drawing.Size(75, 13);
             this.searchlbl.TabIndex = 17;
@@ -444,7 +444,6 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.actionSelectBtn);
-            this.Controls.Add(this.multipleListBoxLbl);
             this.Controls.Add(this.songListBox);
             this.Controls.Add(this.volumeLbl);
             this.Controls.Add(this.volume);
@@ -467,6 +466,7 @@
             this.Controls.Add(this.nowPlaying);
             this.Controls.Add(this.timeLeft);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.multipleListBoxLbl);
             this.ForeColor = System.Drawing.SystemColors.Window;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
