@@ -38,13 +38,12 @@ namespace OsuMp3
         {
             try
             {
-                path = File.ReadAllText(@"path.conf");
+                path = File.ReadAllText(Application.StartupPath + @"\path.conf");
             }
             catch(FileNotFoundException)
             {
                 path = @"C:\osu!\Songs";
-                File.Create(@"path.conf").Close();
-                File.WriteAllText(@"path.conf", path);
+                File.WriteAllText(Application.StartupPath + @"\path.conf", path);
             }
             playNext.Tick += PlayNextEvent;
             timer.Tick += TimerEventProcessor;
@@ -130,7 +129,7 @@ namespace OsuMp3
         {
             if (path != pathBox.Text)
             {
-                File.WriteAllText(@"path.conf", pathBox.Text);
+                File.WriteAllText(Application.StartupPath + @"\path.conf", pathBox.Text);
                 path = pathBox.Text;
             }
 
