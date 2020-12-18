@@ -23,7 +23,8 @@ namespace OsuMp3
         private readonly Timer timer = new Timer();
         private readonly Timer playNext = new Timer();
         private string playpause = "play";
-        private List<string> addMultipleSong = new List<string>();
+        private Dictionary<string, string> DefSong = new Dictionary<string, string>();
+        private Dictionary<string, string> addMultipleSong = new Dictionary<string, string>();
         private Dictionary<string, string> playListSongs = new Dictionary<string, string>();
 
         private const int SPI_SETDESKWALLPAPER = 20;
@@ -81,15 +82,15 @@ namespace OsuMp3
         private void NowPlaying_TextChanged(object sender, EventArgs e)
         {
             albumPicture.Image.Dispose();
-            if (playListSongs[nowPlaying.Text] == "No Pic")
+            if (playListSongs[addMultipleSong[nowPlaying.Text]] == "No Pic")
             {
                 albumPicture.Image = Properties.Resources.circles;
             }
             else
             {
-                albumPicture.Image = new Bitmap(@playListSongs[nowPlaying.Text]);
+                albumPicture.Image = new Bitmap(@playListSongs[addMultipleSong[nowPlaying.Text]]);
             }
-            player.URL = nowPlaying.Text;       
+            player.URL = addMultipleSong[nowPlaying.Text];       
             player.controls.stop();
         }
         private void Next_Click(object sender, EventArgs e)
@@ -225,7 +226,7 @@ namespace OsuMp3
         }
         private void ExtractPlayingMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractFile(nowPlaying.Text, Path.GetFileName(Path.GetDirectoryName(nowPlaying.Text).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), ".mp3");
+            ExtractFile(addMultipleSong[nowPlaying.Text], nowPlaying.Text, ".mp3");
         }
         private void ExtractAllMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -245,13 +246,13 @@ namespace OsuMp3
                 backgroundCopy.Text = "Files copying on background... \r\n" + (x+1) + " out of " + nowPlaying.Items.Count + " copied \r\n"+error+" failed"; ;
                 try
                 {
-                    if(File.Exists(@savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString())) + ".mp3"))
+                    if(File.Exists(@savepath + @"\" + nowPlaying.Items[x].ToString() + ".mp3"))
                     {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(nowPlaying.Items[x].ToString()), false);
+                        File.Copy(@addMultipleSong[nowPlaying.Items[x].ToString()], @savepath + @"\" + nowPlaying.Items[x].ToString() + "_1.mp3", false);
                     }
                     else
                     {
-                        File.Copy(@nowPlaying.Items[x].ToString(), @savepath + @"\" + Path.GetFileName(Path.GetDirectoryName(nowPlaying.Items[x].ToString())) + ".mp3", false);
+                        File.Copy(@addMultipleSong[nowPlaying.Items[x].ToString()], @savepath + @"\" + nowPlaying.Items[x].ToString() + ".mp3", false);
                     }
                     success++;
                 }
@@ -289,9 +290,9 @@ namespace OsuMp3
         }
         private void SetAlbumPictureAsWallpaperToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!playListSongs[nowPlaying.Text].Equals("No Pic"))
+            if(!playListSongs[addMultipleSong[nowPlaying.Text]].Equals("No Pic"))
             {
-                setAsWallpaper(playListSongs[nowPlaying.Text]);
+                setAsWallpaper(playListSongs[addMultipleSong[nowPlaying.Text]]);
             }
             else
             {
@@ -351,12 +352,12 @@ namespace OsuMp3
             {
                 foreach (string path in playlistFileReader(e.ClickedItem.Text))
                 {
-                    if (Path.GetDirectoryName(nowPlaying.Text).Equals(path))
+                    if (Path.GetDirectoryName(addMultipleSong[nowPlaying.Text]).Equals(path))
                     {
                         throw new FileNotFoundException();
                     }
                 }
-                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", nowPlaying.Text, true);
+                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", addMultipleSong[nowPlaying.Text], true);
                 MessageBox.Show("Song added in selected playlist.", "Osu Music");
 
             }
@@ -371,7 +372,7 @@ namespace OsuMp3
             string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
             foreach (string oldContent in playlistFileReader(playlistName))
             {
-                if (oldContent.Equals(nowPlaying.Text))
+                if (oldContent.Equals(addMultipleSong[nowPlaying.Text]))
                 {
                     continue;
                 }
@@ -396,11 +397,11 @@ namespace OsuMp3
         }
         private void AddMultipleSongsToolStripClicked(object sender, EventArgs e)
         {
-            setSelectVisible("Add", true, addMultipleSong.ToArray());
+            setSelectVisible("Add", true, DefSong.Keys.ToArray());
         }
         private void DeleteMultipleSongsToolStripClicked(object sender, EventArgs e)
         {
-            setSelectVisible("Delete", true, playListSongs.Keys.ToArray());
+            setSelectVisible("Delete", true, addMultipleSong.Keys.ToArray());
         }
         private void actionSelectBtn_Click(object sender, EventArgs e)
         {
@@ -408,19 +409,32 @@ namespace OsuMp3
             {
                 foreach(string toWrite in songListBox.CheckedItems)
                 {
-                    playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", toWrite, true);
+                    playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", DefSong[toWrite], true);
                 }
                 MessageBox.Show("Songs added in selected playlist. Refreshing", "Osu Music");
                 loadPlaylist(label1.Text.Replace("Now Playing Playlist: ", ""));
             }else if (multipleListBoxLbl.Text.ToLower().Contains("delete"))
             {
-
+                bool deleteItemFound = false;
                 List<string> toWrite = new List<string>();
                 string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
                 foreach (string oldContent in playlistFileReader(playlistName))
                 {
-                    if (songListBox.CheckedItems.Contains(oldContent))
+                    foreach(string keys in songListBox.CheckedItems)
                     {
+                        if (addMultipleSong[keys].Equals(oldContent))
+                        {
+                            deleteItemFound = true;
+                            break;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    if (deleteItemFound)
+                    {
+                        deleteItemFound = false;
                         continue;
                     }
                     else
@@ -449,6 +463,7 @@ namespace OsuMp3
         #region methods
         private void loadPlaylist()
         {
+            DefSong.Clear();
             if(addMultipleSong.Count != 0)
             {
                 addMultipleSong.Clear();
@@ -459,7 +474,7 @@ namespace OsuMp3
             loader(path);
             try
             {
-                nowPlaying.DataSource = playListSongs.Keys.ToArray();
+                nowPlaying.DataSource = addMultipleSong.Keys.ToArray();
                 nowPlaying.SelectedIndex = 0;
                 label1.Text = "Now Playing : Default";
             }
@@ -485,7 +500,7 @@ namespace OsuMp3
         {
             try
             {
-                string line, file, song = " ", pic = " ";
+                string line, file, song = " ", pic = " ", artist = "", title = "";
                 SearchOption optionSearch;
                 if (localPath.Equals(path))
                 {
@@ -537,6 +552,14 @@ namespace OsuMp3
                                     hasPic = true;
                                     break;
                                 }
+                                else if (line.Contains("Title:"))
+                                {
+                                    title = line.Replace("Title:", "");
+                                }
+                                else if (line.Contains("Artist:"))
+                                {
+                                    artist = line.Replace("Artist:", "");
+                                }
                                 else if (line.Equals("@//Break Periods"))
                                 {
                                     break;
@@ -549,12 +572,29 @@ namespace OsuMp3
                             if (!hasPic)
                             {
                                 playListSongs.Add(song, "No Pic");
+                                try
+                                {
+                                    addMultipleSong.Add(title + " - " + artist, song);
+                                }
+                                catch (ArgumentException)
+                                {
+
+                                }
+                                
                             }
                             else
                             {
                                 if (!playListSongs.ContainsKey(song))
                                 {
                                     playListSongs.Add(song, pic);
+                                    try
+                                    {
+                                        addMultipleSong.Add(title + " - " + artist, song);
+                                    }
+                                    catch (ArgumentException)
+                                    {
+
+                                    }
                                 }
                                 hasPic = false;
                             }
@@ -584,11 +624,11 @@ namespace OsuMp3
         }
         private void loadPlaylist(string playListName)
         {
-
-            if (label1.Text.Contains("Default"))
+            if(label1.Text.Replace("Now Playing : ", "").Equals("Default"))
             {
-                addMultipleSong.AddRange(playListSongs.Keys.ToArray());
+                DefSong = new Dictionary<string, string>(addMultipleSong);
             }
+            addMultipleSong.Clear();
             playListSongs.Clear();
             label1.Text = "Loading Audio Files. Please wait.";
             SetControlActivity(false);
@@ -600,7 +640,7 @@ namespace OsuMp3
 
             try
             {
-                nowPlaying.DataSource = playListSongs.Keys.ToArray();
+                nowPlaying.DataSource = addMultipleSong.Keys.ToArray();
                 nowPlaying.SelectedIndex = 0;
                 label1.Text = "Now Playing Playlist: " + playListName;
             }
@@ -659,7 +699,7 @@ namespace OsuMp3
         }
         private void ExtractAlbumPictureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (playListSongs[nowPlaying.Text].Equals("No Pic"))
+            if (playListSongs[addMultipleSong[nowPlaying.Text]].Equals("No Pic"))
             {
                 string savePath = OpenFileDiag("Select Your File Save Destination: ");
                 Properties.Resources.circles.Save(savePath + @"\" + "nekodex - circles.jpg");
@@ -667,7 +707,7 @@ namespace OsuMp3
             }
             else
             {
-                ExtractFile(playListSongs[nowPlaying.Text], Path.GetFileName(Path.GetDirectoryName(playListSongs[nowPlaying.Text]).TrimStart(path.ToCharArray()).TrimStart("0123456789".ToCharArray()).TrimStart(' ')), Path.GetExtension(playListSongs[nowPlaying.Text]));
+                ExtractFile(playListSongs[addMultipleSong[nowPlaying.Text]], nowPlaying.Text, Path.GetExtension(playListSongs[addMultipleSong[nowPlaying.Text]]));
             }
         }
         private void setAsWallpaper(string imgPath)
