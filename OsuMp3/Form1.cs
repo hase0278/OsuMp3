@@ -574,11 +574,18 @@ namespace OsuMp3
                                 playListSongs.Add(song, "No Pic");
                                 try
                                 {
-                                    addMultipleSong.Add(title + " - " + artist, song);
+                                    if(song.ToLower().Contains("collection") || song.ToLower().Contains("mappack") || song.ToLower().Contains("openings") || song.ToLower().Contains("endings"))
+                                    {
+                                        addMultipleSong.Add(Path.GetFileName(song).Replace(".mp3", "") + " - " + Path.GetDirectoryName(song).Replace(path + @"\", ""), song);
+                                    }
+                                    else
+                                    {
+                                        addMultipleSong.Add(title + " - " + artist, song);
+                                    } 
                                 }
                                 catch (ArgumentException)
                                 {
-
+                                    
                                 }
                                 
                             }
@@ -589,11 +596,18 @@ namespace OsuMp3
                                     playListSongs.Add(song, pic);
                                     try
                                     {
-                                        addMultipleSong.Add(title + " - " + artist, song);
+                                        if (song.ToLower().Contains("collection") || song.ToLower().Contains("mappack") || song.ToLower().Contains("openings") || song.ToLower().Contains("endings"))
+                                        {
+                                            addMultipleSong.Add(Path.GetFileName(song).Replace(".mp3", "") + " - " + Path.GetDirectoryName(song).Replace(path + @"\", ""), song);
+                                        }
+                                        else
+                                        {
+                                            addMultipleSong.Add(title + " - " + artist, song);
+                                        }
                                     }
                                     catch (ArgumentException)
                                     {
-
+                                        
                                     }
                                 }
                                 hasPic = false;
