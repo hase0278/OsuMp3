@@ -46,7 +46,6 @@ namespace OsuMp3
                 path = @"C:\osu!\Songs";
                 File.WriteAllText(Application.StartupPath + @"\path.conf", path);
             }
-            playNext.Tick += PlayNextEvent;
             timer.Tick += TimerEventProcessor;
             deleteFromPlaylist.Click += deleteToolStripClicked;
             addMultipleToPlaylist.Click += AddMultipleSongsToolStripClicked;
@@ -226,10 +225,6 @@ namespace OsuMp3
                 timeLeft.Value = (int)player.currentPosition();
                 currentPosition.Text = TimeSpan.FromMilliseconds(player.getLength()).ToString("mm':'ss");
             }
-
-        }
-        private void PlayNextEvent(object sender, EventArgs e)
-        {
 
         }
         private void TimeLeft_Scroll(object sender, EventArgs e)
