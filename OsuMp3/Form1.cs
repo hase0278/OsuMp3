@@ -2,19 +2,19 @@
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
-using WMPLib;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Microsoft.CSharp.RuntimeBinder;
+using System.Text;
 
 namespace OsuMp3
 {
     public partial class songsCheckList : Form
     {
         #region member variables
-        private readonly WindowsMediaPlayer player = new WindowsMediaPlayer();
+        private Mp3Player player;
         private ToolStripMenuItem addMultipleToPlaylist = new ToolStripMenuItem("Add songs to current playlist");
         private ToolStripMenuItem deleteMultipleSongToPlaylist = new ToolStripMenuItem("Delete songs from current playlist");
         private ToolStripMenuItem deleteFromPlaylist = new ToolStripMenuItem("Delete song from playlist");
@@ -48,7 +48,6 @@ namespace OsuMp3
             }
             playNext.Tick += PlayNextEvent;
             timer.Tick += TimerEventProcessor;
-            player.PlayStateChange += PlayStateChanged;
             deleteFromPlaylist.Click += deleteToolStripClicked;
             addMultipleToPlaylist.Click += AddMultipleSongsToolStripClicked;
             deleteMultipleSongToPlaylist.Click += DeleteMultipleSongsToolStripClicked;
@@ -64,20 +63,34 @@ namespace OsuMp3
 
             pathBox.Text = path;
         }
+                private void TimeLeft_ValueChanged(object sender, EventArgs e)
+        {
+            if(timeLeft.Value == timeLeft.Maximum)
+            {
+                PlayStateChanged(8);
+            }
+        }
         private void Play_Click(object sender, EventArgs e)
         {
-            if(playpause == "play")
+            
+            
+            if (playpause == "play")
             {
-                player.controls.play();
+                if(player == null)
+                {
+                    player = new Mp3Player(addMultipleSong[nowPlaying.Text]);
+                }
+                Play();
             }
             else if (playpause == "pause")
             {
-                player.controls.pause();
+                Pause();
             }
         }
         private void Stop_Click(object sender, EventArgs e)
         {
-            player.controls.stop();
+            Stop();
+            player = null;
         }
         private void NowPlaying_TextChanged(object sender, EventArgs e)
         {
@@ -90,20 +103,24 @@ namespace OsuMp3
             {
                 albumPicture.Image = new Bitmap(@playListSongs[addMultipleSong[nowPlaying.Text]]);
             }
-            player.URL = addMultipleSong[nowPlaying.Text];       
-            player.controls.stop();
+            
+            if(player != null)
+            {
+                player.Dispose();
+            }
+            
+            player = new Mp3Player(@addMultipleSong[nowPlaying.Text]);
+            Play();
         }
         private void Next_Click(object sender, EventArgs e)
         {
             try
             {
                 nowPlaying.SelectedIndex += 1;
-                playNext.Start();
             }
             catch (ArgumentOutOfRangeException)
             {
                 nowPlaying.SelectedIndex = 0;
-                playNext.Start();
             }
         }
         private void Previous_Click(object sender, EventArgs e)
@@ -111,12 +128,10 @@ namespace OsuMp3
             if (nowPlaying.SelectedIndex != 0)
             {
                 nowPlaying.SelectedIndex -= 1;
-                playNext.Start();
             }
             else
             {
                 nowPlaying.SelectedIndex = nowPlaying.Items.Count - 1;
-                playNext.Start();
             }
         }
         private void Browse_Click(object sender, EventArgs e)
@@ -179,7 +194,7 @@ namespace OsuMp3
                     break;
                 case 3:    // Playing
                     play.BackgroundImage.Dispose();
-                    timeLeft.Maximum = Convert.ToInt32(Math.Floor(player.currentMedia.duration));
+                    timeLeft.Maximum = Convert.ToInt32(player.getLength());
                     play.BackgroundImage = Properties.Resources.pause;
                     playpause = "pause";
                     timer.Interval = 1000;
@@ -190,7 +205,6 @@ namespace OsuMp3
                     play.BackgroundImage = Properties.Resources.play;
                     playpause = "play";
                     next.PerformClick();
-                    playNext.Start();
                     break;
                 default:
                     play.BackgroundImage.Dispose();
@@ -202,19 +216,25 @@ namespace OsuMp3
         }
         private void TimerEventProcessor(object sender, EventArgs e)
         {
-            timeLeft.Value = (int)Math.Floor(player.controls.currentPosition);
-            currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
+            if (player == null)
+            {
+                timer.Stop();
+                timeLeft.Value = 0;
+            }
+            else
+            {
+                timeLeft.Value = (int)player.currentPosition();
+                currentPosition.Text = TimeSpan.FromMilliseconds(player.getLength()).ToString("mm':'ss");
+            }
+
         }
         private void PlayNextEvent(object sender, EventArgs e)
         {
-            player.controls.play();
-            playNext.Stop();
+
         }
         private void TimeLeft_Scroll(object sender, EventArgs e)
         {
-            player.controls.currentPosition = timeLeft.Value;
-            timeLeft.Value = (int)Math.Floor(player.controls.currentPosition);
-            currentPosition.Text = TimeSpan.FromMinutes((int)Math.Floor(player.controls.currentPosition)).ToString("hh':'mm");
+            player.SetPosition(timeLeft.Value);
         }
         private void SetOsuSongsFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -286,7 +306,7 @@ namespace OsuMp3
         }
         private void Volume_Scroll(object sender, EventArgs e)
         {
-            player.settings.volume = volume.Value;
+            player.SetVolume(volume.Value);
         }
         private void SetAlbumPictureAsWallpaperToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -357,7 +377,7 @@ namespace OsuMp3
                         throw new FileNotFoundException();
                     }
                 }
-                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", addMultipleSong[nowPlaying.Text], true);
+                playlistFileWriter(@Application.StartupPath + @"\" + e.ClickedItem.Text + ".ompl", addMultipleSong[nowPlaying.Text].Replace(path, ""), true);
                 MessageBox.Show("Song added in selected playlist.", "Osu Music");
 
             }
@@ -372,7 +392,7 @@ namespace OsuMp3
             string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
             foreach (string oldContent in playlistFileReader(playlistName))
             {
-                if (oldContent.Equals(addMultipleSong[nowPlaying.Text]))
+                if (oldContent.Equals(addMultipleSong[nowPlaying.Text].Replace(path, "")))
                 {
                     continue;
                 }
@@ -409,7 +429,7 @@ namespace OsuMp3
             {
                 foreach(string toWrite in songListBox.CheckedItems)
                 {
-                    playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", DefSong[toWrite], true);
+                    playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", DefSong[toWrite].Replace(path, ""), true);
                 }
                 MessageBox.Show("Songs added in selected playlist. Refreshing", "Osu Music");
                 loadPlaylist(label1.Text.Replace("Now Playing Playlist: ", ""));
@@ -422,7 +442,7 @@ namespace OsuMp3
                 {
                     foreach(string keys in songListBox.CheckedItems)
                     {
-                        if (addMultipleSong[keys].Equals(oldContent))
+                        if (addMultipleSong[keys].Replace(path, "").Equals(oldContent))
                         {
                             deleteItemFound = true;
                             break;
@@ -461,6 +481,24 @@ namespace OsuMp3
         #endregion
         #endregion
         #region methods
+        private void Play()
+        {
+            player.Play();
+            player.isPlaying = true;
+            PlayStateChanged(3);
+        }
+        private void Pause()
+        {
+            player.Pause();
+            player.isPlaying = false;
+            PlayStateChanged(2);
+        }
+        private void Stop()
+        {
+            player.Stop();
+            player.isPlaying = false;
+            PlayStateChanged(2);
+        }
         private void loadPlaylist()
         {
             DefSong.Clear();
@@ -649,7 +687,7 @@ namespace OsuMp3
             
             foreach(string localPath in playlistFileReader(playListName))
             {
-                loader(localPath);
+                loader(@path + @localPath);
             }
 
             try
@@ -785,6 +823,108 @@ namespace OsuMp3
                 songListBox.Items.Clear();
             }     
         }
+        #endregion
+
+        #region mp3PlayerClass
+
+        class Mp3Player : IDisposable
+        {
+            [DllImport(@"winmm.dll")]
+            private static extern long mciSendString(string strCommand, StringBuilder strReturn, int iReturnLength, IntPtr hwndCallBack);
+            public bool Repeat { get; set; }
+            public bool isPlaying { get; set; }
+
+            public void SetPosition(int miliseconds)
+            {
+                if (isPlaying)
+                {
+                    string command = "play MediaFile from " + miliseconds.ToString();
+                    checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+                }
+                else
+                {
+                    string command = "seek MediaFile to " + miliseconds.ToString();
+                    checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+                }
+            }
+
+            public long getLength()
+            {
+                StringBuilder sb = new StringBuilder(128);
+                mciSendString("status MediaFile length", sb, 128, IntPtr.Zero);
+                
+                return Convert.ToInt64(sb.ToString());
+            }
+
+            public long currentPosition()
+            {
+                StringBuilder sb = new StringBuilder(128);
+                mciSendString("status MediaFile position", sb, 128, IntPtr.Zero);
+                long songlength = (long)Convert.ToUInt64(sb.ToString());
+                return songlength;
+            }
+
+            public void SetVolume(int volume)
+            {
+                string command = "setaudio MediaFile volume to " + volume.ToString();
+                checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+            }
+
+            public Mp3Player(string FileName)
+            {
+                string command = "open \"" + @FileName + "\" type mpegvideo alias MediaFile";
+                try
+                {
+                    checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+                }
+                catch (Exception)
+                {
+                    TagLib.File file = TagLib.File.Create(@FileName);
+                    file.RemoveTags(TagLib.TagTypes.AllTags);
+                    file.Save();
+                    command = "open \"" + @FileName + "\" type mpegvideo alias MediaFile";
+                    checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+                }
+            }
+
+            public void Play()
+            {
+                string command = "play MediaFile notify";
+                if (Repeat)
+                {
+                    command += " REPEAT";
+                }
+                checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+            }
+
+            public void Pause()
+            {
+                string command = "pause MediaFile";
+                checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+            }
+            public void Stop()
+            {
+                string command = "close MediaFile";
+                checkMCIResult(mciSendString(command, null, 0, IntPtr.Zero));
+            }
+
+            private static void checkMCIResult(long code)
+            {
+                int err = (int)(code & 0xffffffff);
+                if (err != 0)
+                {
+                    throw new Exception(string.Format("MCI error {0}", err));
+                }
+            }
+
+            public void Dispose()
+            {
+                string command = "close MediaFile";
+                mciSendString(command, null, 0, IntPtr.Zero);
+            }
+        }
+
+
         #endregion
     }
 }

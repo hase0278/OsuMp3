@@ -182,6 +182,7 @@
             this.timeLeft.TabIndex = 19;
             this.timeLeft.TickStyle = System.Windows.Forms.TickStyle.None;
             this.timeLeft.Scroll += new System.EventHandler(this.TimeLeft_Scroll);
+            this.timeLeft.ValueChanged += new System.EventHandler(this.TimeLeft_ValueChanged);
             // 
             // currentPosition
             // 
@@ -389,12 +390,12 @@
             // volume
             // 
             this.volume.Location = new System.Drawing.Point(80, 380);
-            this.volume.Maximum = 100;
+            this.volume.Maximum = 1000;
             this.volume.Name = "volume";
             this.volume.Size = new System.Drawing.Size(103, 45);
             this.volume.TabIndex = 24;
             this.volume.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.volume.Value = 100;
+            this.volume.Value = 1000;
             this.volume.Scroll += new System.EventHandler(this.Volume_Scroll);
             // 
             // volumeLbl
@@ -409,7 +410,7 @@
             // songListBox
             // 
             this.songListBox.FormattingEnabled = true;
-            this.songListBox.Location = new System.Drawing.Point(34, 66);
+            this.songListBox.Location = new System.Drawing.Point(33, 61);
             this.songListBox.Name = "songListBox";
             this.songListBox.Size = new System.Drawing.Size(720, 349);
             this.songListBox.TabIndex = 26;
