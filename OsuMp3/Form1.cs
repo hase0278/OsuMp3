@@ -889,7 +889,7 @@ namespace OsuMp3
 
             public void Play()
             {
-                string command = "play MediaFile notify";
+                string command = "play MediaFile";
                 if (Repeat)
                 {
                     command += " REPEAT";
