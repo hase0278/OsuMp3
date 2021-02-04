@@ -65,6 +65,7 @@
             this.songListBox = new System.Windows.Forms.CheckedListBox();
             this.multipleListBoxLbl = new System.Windows.Forms.Label();
             this.actionSelectBtn = new System.Windows.Forms.Button();
+            this.cancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.timeLeft)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.albumPicture)).BeginInit();
@@ -150,6 +151,7 @@
             this.search.Size = new System.Drawing.Size(627, 20);
             this.search.TabIndex = 15;
             this.search.Visible = false;
+            this.search.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Search_KeyDown);
             // 
             // findBtn
             // 
@@ -337,7 +339,7 @@
             // 
             // previous
             // 
-            this.previous.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.previous.BackColor = System.Drawing.Color.Transparent;
             this.previous.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("previous.BackgroundImage")));
             this.previous.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.previous.ForeColor = System.Drawing.SystemColors.Menu;
@@ -350,7 +352,7 @@
             // 
             // next
             // 
-            this.next.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.next.BackColor = System.Drawing.Color.Transparent;
             this.next.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("next.BackgroundImage")));
             this.next.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.next.ForeColor = System.Drawing.SystemColors.Menu;
@@ -363,7 +365,7 @@
             // 
             // stop
             // 
-            this.stop.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.stop.BackColor = System.Drawing.Color.Transparent;
             this.stop.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("stop.BackgroundImage")));
             this.stop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.stop.ForeColor = System.Drawing.SystemColors.Menu;
@@ -376,7 +378,7 @@
             // 
             // play
             // 
-            this.play.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.play.BackColor = System.Drawing.Color.Transparent;
             this.play.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("play.BackgroundImage")));
             this.play.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.play.ForeColor = System.Drawing.SystemColors.Menu;
@@ -410,7 +412,7 @@
             // songListBox
             // 
             this.songListBox.FormattingEnabled = true;
-            this.songListBox.Location = new System.Drawing.Point(33, 61);
+            this.songListBox.Location = new System.Drawing.Point(34, 67);
             this.songListBox.Name = "songListBox";
             this.songListBox.Size = new System.Drawing.Size(720, 349);
             this.songListBox.TabIndex = 26;
@@ -428,7 +430,7 @@
             // actionSelectBtn
             // 
             this.actionSelectBtn.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.actionSelectBtn.Location = new System.Drawing.Point(366, 418);
+            this.actionSelectBtn.Location = new System.Drawing.Point(324, 418);
             this.actionSelectBtn.Name = "actionSelectBtn";
             this.actionSelectBtn.Size = new System.Drawing.Size(75, 23);
             this.actionSelectBtn.TabIndex = 28;
@@ -437,13 +439,27 @@
             this.actionSelectBtn.Visible = false;
             this.actionSelectBtn.Click += new System.EventHandler(this.actionSelectBtn_Click);
             // 
+            // cancel
+            // 
+            this.cancel.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.cancel.Location = new System.Drawing.Point(405, 418);
+            this.cancel.Name = "cancel";
+            this.cancel.Size = new System.Drawing.Size(75, 23);
+            this.cancel.TabIndex = 29;
+            this.cancel.Text = "Cancel";
+            this.cancel.UseVisualStyleBackColor = false;
+            this.cancel.Visible = false;
+            this.cancel.Click += new System.EventHandler(this.Cancel_Click);
+            // 
             // songsCheckList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.cancel);
             this.Controls.Add(this.actionSelectBtn);
             this.Controls.Add(this.songListBox);
             this.Controls.Add(this.volumeLbl);
@@ -527,6 +543,7 @@
         private System.Windows.Forms.CheckedListBox songListBox;
         private System.Windows.Forms.Label multipleListBoxLbl;
         private System.Windows.Forms.Button actionSelectBtn;
+        private System.Windows.Forms.Button cancel;
     }
 }
 

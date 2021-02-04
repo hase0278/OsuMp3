@@ -13,7 +13,11 @@ namespace OsuMp3
 
         private void createPlaylistBtn_Click(object sender, EventArgs e)
         {
-            if(!File.Exists(Application.StartupPath + @"\" + playlistName.Text + ".ompl"))
+            if (playlistName.Text.ToLower().Contains("default") || playlistName.Text.ToLower().Contains("now playing"))
+            {
+                MessageBox.Show("Invalid name! Please choose another name!");
+            }
+            else if(!File.Exists(Application.StartupPath + @"\" + playlistName.Text + ".ompl"))
             {
                 File.Create(Application.StartupPath + @"\" + playlistName.Text + ".ompl");
                 MessageBox.Show("Playlist created.", "Osu Music");

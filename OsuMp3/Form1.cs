@@ -26,13 +26,6 @@ namespace OsuMp3
         private Dictionary<string, string> DefSong = new Dictionary<string, string>();
         private Dictionary<string, string> addMultipleSong = new Dictionary<string, string>();
         private Dictionary<string, string> playListSongs = new Dictionary<string, string>();
-
-        private const int SPI_SETDESKWALLPAPER = 20;
-        private const int SPIF_UPDATEINIFILE = 0x01;
-        private const int SPIF_SENDWININICHANGE = 0x02;
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
         #endregion
         #region constructor
         public songsCheckList()
@@ -62,7 +55,18 @@ namespace OsuMp3
 
             pathBox.Text = path;
         }
-                private void TimeLeft_ValueChanged(object sender, EventArgs e)
+        private void Search_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                findBtn.PerformClick();
+            }
+        }
+        private void Cancel_Click(object sender, EventArgs e)
+        {
+            setSelectVisible("", false, null);
+        }
+        private void TimeLeft_ValueChanged(object sender, EventArgs e)
         {
             if(timeLeft.Value == timeLeft.Maximum)
             {
@@ -88,8 +92,11 @@ namespace OsuMp3
         }
         private void Stop_Click(object sender, EventArgs e)
         {
-            Stop();
-            player = null;
+            if (player != null)
+            {
+                Stop();
+                player = null;
+            }
         }
         private void NowPlaying_TextChanged(object sender, EventArgs e)
         {
@@ -233,11 +240,21 @@ namespace OsuMp3
         }
         private void SetOsuSongsFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderSetVisible(true);
+            if(search.Visible || !label1.Text.Equals("Now Playing : Default"))
+            {
+
+            }
+            else
+            {
+                FolderSetVisible(true);
+            } 
         }
         private void SearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SearchVisible(true);
+            if(!pathBox.Visible && !songListBox.Visible)
+            {
+                SearchVisible(true);
+            }
         }
         private void ExtractPlayingMusicToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -305,15 +322,17 @@ namespace OsuMp3
         }
         private void SetAlbumPictureAsWallpaperToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!playListSongs[addMultipleSong[nowPlaying.Text]].Equals("No Pic"))
+            if (!playListSongs[addMultipleSong[nowPlaying.Text]].Equals("No Pic"))
             {
-                setAsWallpaper(playListSongs[addMultipleSong[nowPlaying.Text]]);
+                setPcWallPaper.setAsWallpaper(playListSongs[addMultipleSong[nowPlaying.Text]]);
+                MessageBox.Show("Wallpaper set to " + @playListSongs[addMultipleSong[nowPlaying.Text]] + ".", "Osu Music");
             }
             else
             {
                 Bitmap img = new Bitmap(Properties.Resources.circles);
                 img.Save(@Application.StartupPath + @"\album.jpg");
-                setAsWallpaper(@Application.StartupPath+@"\album.jpg");
+                setPcWallPaper.setAsWallpaper(@Application.StartupPath+@"\album.jpg");
+                MessageBox.Show("Wallpaper set to Nekodex - Circles.jpg.", "Osu Music");
                 File.Delete(@Application.StartupPath + @"\album.jpg");
             }
         }
@@ -412,11 +431,17 @@ namespace OsuMp3
         }
         private void AddMultipleSongsToolStripClicked(object sender, EventArgs e)
         {
-            setSelectVisible("Add", true, DefSong.Keys.ToArray());
+            if (!search.Visible && !pathBox.Visible)
+            {
+                setSelectVisible("Add", true, DefSong.Keys.ToArray());
+            }        
         }
         private void DeleteMultipleSongsToolStripClicked(object sender, EventArgs e)
         {
-            setSelectVisible("Delete", true, addMultipleSong.Keys.ToArray());
+            if (!search.Visible && !pathBox.Visible)
+            {
+                setSelectVisible("Delete", true, addMultipleSong.Keys.ToArray());
+            }
         }
         private void actionSelectBtn_Click(object sender, EventArgs e)
         {
@@ -757,18 +782,7 @@ namespace OsuMp3
                 ExtractFile(playListSongs[addMultipleSong[nowPlaying.Text]], nowPlaying.Text, Path.GetExtension(playListSongs[addMultipleSong[nowPlaying.Text]]));
             }
         }
-        private void setAsWallpaper(string imgPath)
-        {
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
-
-            key.SetValue(@"WallpaperStyle", 2.ToString());
-            key.SetValue(@"TileWallpaper", 0.ToString());
-            key.Close();
-
-            SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, @imgPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
-            MessageBox.Show("Wallpaper set to " + @imgPath + ".", "Osu Music");
-
-        }
+        
         public void loadExistingPlaylist()
         {
             loadToolStripMenuItem.DropDownItems.Clear();
@@ -809,6 +823,7 @@ namespace OsuMp3
             actionSelectBtn.Text = action;
             actionSelectBtn.Visible = visibility;
             multipleListBoxLbl.Visible = visibility;
+            cancel.Visible = visibility;
             try
             {
                 songListBox.Items.AddRange(source);
@@ -920,6 +935,23 @@ namespace OsuMp3
         }
 
 
+        #endregion
+        #region wallpaperHandlerClass
+        public class setPcWallPaper
+        {
+            [DllImport("user32.dll", CharSet = CharSet.Auto)]
+            private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+            public static void setAsWallpaper(string imgPath)
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true))
+                {
+                    key.SetValue(@"WallpaperStyle", 2.ToString());
+                    key.SetValue(@"TileWallpaper", 0.ToString());
+                }
+
+                SystemParametersInfo(20, 0, @imgPath, 0x01 | 0x02);
+            }
+        }
         #endregion
     }
 }
