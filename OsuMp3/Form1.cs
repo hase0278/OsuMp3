@@ -519,6 +519,13 @@ namespace OsuMp3
             player.isPlaying = false;
             PlayStateChanged(2);
         }
+        private void ChangeEnabled(bool enabled)
+        {
+            foreach (Control c in this.Controls)
+            {
+                c.Enabled = enabled;
+            }
+        }
         private void loadPlaylist()
         {
             DefSong.Clear();
@@ -526,6 +533,7 @@ namespace OsuMp3
             {
                 addMultipleSong.Clear();
             }
+            ChangeEnabled(false);
             label1.Text = "Loading Audio Files. Please wait.";
             SetControlActivity(false);
             playListSongs.Clear();
@@ -552,7 +560,7 @@ namespace OsuMp3
             {
                 //Do nothing
             }
-
+            ChangeEnabled(true);
         }
         private void loader(string localPath)
         {
@@ -696,6 +704,7 @@ namespace OsuMp3
         }
         private void loadPlaylist(string playListName)
         {
+            ChangeEnabled(false);
             if(label1.Text.Replace("Now Playing : ", "").Equals("Default"))
             {
                 DefSong = new Dictionary<string, string>(addMultipleSong);
@@ -721,6 +730,7 @@ namespace OsuMp3
                 MessageBox.Show("No MP3 file found on playlist! Loading Default Playlist", "Osu Music");
                 loadPlaylist();
             }
+            ChangeEnabled(true);
         }
         private void SetControlActivity(bool state)
         {
