@@ -445,42 +445,30 @@ namespace OsuMp3
         }
         private void actionSelectBtn_Click(object sender, EventArgs e)
         {
+            string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
             if (multipleListBoxLbl.Text.ToLower().Contains("add"))
             {
+                int existing = 0;
                 foreach(string toWrite in songListBox.CheckedItems)
                 {
-                    playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", DefSong[toWrite].Replace(path, ""), true);
+                    try
+                    {
+                        string result = addMultipleSong[toWrite];
+                        existing++;
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        playlistFileWriter(Application.StartupPath + @"\" + label1.Text.Replace("Now Playing Playlist: ", "") + ".ompl", DefSong[toWrite].Replace(path, ""), true);
+                    }
                 }
-                MessageBox.Show("Songs added in selected playlist. Refreshing", "Osu Music");
+                MessageBox.Show("Songs added in selected playlist." + existing + " songs exists on playlist. Refreshing", "Osu Music");
                 loadPlaylist(label1.Text.Replace("Now Playing Playlist: ", ""));
             }else if (multipleListBoxLbl.Text.ToLower().Contains("delete"))
             {
-                bool deleteItemFound = false;
-                List<string> toWrite = new List<string>();
-                string playlistName = label1.Text.Replace("Now Playing Playlist: ", "");
-                foreach (string oldContent in playlistFileReader(playlistName))
+                List<string> toWrite = new List<string>(playlistFileReader(playlistName));
+                foreach(string keys in songListBox.CheckedItems)
                 {
-                    foreach(string keys in songListBox.CheckedItems)
-                    {
-                        if (addMultipleSong[keys].Replace(path, "").Equals(oldContent))
-                        {
-                            deleteItemFound = true;
-                            break;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    if (deleteItemFound)
-                    {
-                        deleteItemFound = false;
-                        continue;
-                    }
-                    else
-                    {
-                        toWrite.Add(oldContent);
-                    }
+                    toWrite.Remove(addMultipleSong[keys].Replace(path, ""));
                 }
                 for (int index = 0; index < toWrite.Count; index++)
                 {
@@ -493,7 +481,7 @@ namespace OsuMp3
                         playlistFileWriter(playlistName + ".ompl", toWrite[index], true);
                     }
                 }
-                MessageBox.Show("Song removed from playlist. Current playlist reload started.", "Osu Music");
+                MessageBox.Show("Songd removed from playlist. Current playlist reload started.", "Osu Music");
                 loadPlaylist(playlistName);
             }
             setSelectVisible("", false, null);
