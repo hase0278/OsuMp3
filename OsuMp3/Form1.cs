@@ -166,9 +166,17 @@ namespace OsuMp3
             isFound = false;
             SearchResult.Items.Clear();
             SearchResult.Visible = false;
-            for (int x = 0; x < nowPlaying.Items.Count; x++)
+            int searchCount = songListBox.Visible ? songListBox.Items.Count : nowPlaying.Items.Count;
+            for (int x = 0; x < searchCount; x++)
             {
-                if (nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.ToLower()))
+                if (songListBox.Visible && songListBox.Items[x].ToString().ToLower().Contains(search.Text.ToLower()))
+                {
+                    isFound = true;
+                    SearchResult.Visible = true;
+                    SearchResult.Items.Add(songListBox.Items[x].ToString());
+
+                }
+                else if (!songListBox.Visible && nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.ToLower()))
                 {
                     SearchResult.Visible = true;
                     isFound = true;
@@ -251,7 +259,7 @@ namespace OsuMp3
         }
         private void SearchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(!pathBox.Visible && !songListBox.Visible)
+            if(!pathBox.Visible && !search.Visible)
             {
                 SearchVisible(true);
             }
@@ -306,6 +314,14 @@ namespace OsuMp3
             if(SearchResult.Text.Trim(' ') == "")
             {
                 //Do nothing
+            }
+            else if (songListBox.Visible)
+            {
+                SearchResult.Visible = false;
+                search.Text = "";
+                songListBox.SetItemChecked(songListBox.Items.IndexOf(SearchResult.Text), true);
+                SearchResult.Items.Clear();
+                SearchResult.Visible = false;
             }
             else
             {
@@ -816,6 +832,7 @@ namespace OsuMp3
         }
         private void setSelectVisible(string action, bool visibility, string[] source)
         {
+            SearchVisible(visibility);
             multipleListBoxLbl.Text = "Select songs to " + action.ToLower() + " on playlist";
             songListBox.Visible = visibility;
             actionSelectBtn.Text = action;

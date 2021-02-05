@@ -146,7 +146,7 @@
             this.search.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.search.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.search.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.search.Location = new System.Drawing.Point(80, 35);
+            this.search.Location = new System.Drawing.Point(80, 26);
             this.search.Name = "search";
             this.search.Size = new System.Drawing.Size(627, 20);
             this.search.TabIndex = 15;
@@ -157,7 +157,7 @@
             // 
             this.findBtn.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.findBtn.ForeColor = System.Drawing.SystemColors.Menu;
-            this.findBtn.Location = new System.Drawing.Point(713, 32);
+            this.findBtn.Location = new System.Drawing.Point(713, 24);
             this.findBtn.Name = "findBtn";
             this.findBtn.Size = new System.Drawing.Size(75, 23);
             this.findBtn.TabIndex = 16;
@@ -169,7 +169,7 @@
             // searchlbl
             // 
             this.searchlbl.AutoSize = true;
-            this.searchlbl.Location = new System.Drawing.Point(6, 38);
+            this.searchlbl.Location = new System.Drawing.Point(6, 33);
             this.searchlbl.Name = "searchlbl";
             this.searchlbl.Size = new System.Drawing.Size(75, 13);
             this.searchlbl.TabIndex = 17;
@@ -320,7 +320,7 @@
             // SearchResult
             // 
             this.SearchResult.FormattingEnabled = true;
-            this.SearchResult.Location = new System.Drawing.Point(80, 52);
+            this.SearchResult.Location = new System.Drawing.Point(80, 42);
             this.SearchResult.Name = "SearchResult";
             this.SearchResult.Size = new System.Drawing.Size(627, 56);
             this.SearchResult.TabIndex = 23;
@@ -412,7 +412,7 @@
             // songListBox
             // 
             this.songListBox.FormattingEnabled = true;
-            this.songListBox.Location = new System.Drawing.Point(34, 67);
+            this.songListBox.Location = new System.Drawing.Point(33, 67);
             this.songListBox.Name = "songListBox";
             this.songListBox.Size = new System.Drawing.Size(720, 349);
             this.songListBox.TabIndex = 26;
@@ -421,7 +421,7 @@
             // multipleListBoxLbl
             // 
             this.multipleListBoxLbl.AutoSize = true;
-            this.multipleListBoxLbl.Location = new System.Drawing.Point(33, 41);
+            this.multipleListBoxLbl.Location = new System.Drawing.Point(25, 51);
             this.multipleListBoxLbl.Name = "multipleListBoxLbl";
             this.multipleListBoxLbl.Size = new System.Drawing.Size(10, 13);
             this.multipleListBoxLbl.TabIndex = 27;
@@ -459,12 +459,12 @@
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.SearchResult);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.actionSelectBtn);
             this.Controls.Add(this.songListBox);
             this.Controls.Add(this.volumeLbl);
             this.Controls.Add(this.volume);
-            this.Controls.Add(this.SearchResult);
             this.Controls.Add(this.backgroundCopy);
             this.Controls.Add(this.currentPosition);
             this.Controls.Add(this.searchlbl);
