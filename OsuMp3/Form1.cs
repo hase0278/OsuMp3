@@ -168,7 +168,7 @@ namespace OsuMp3
             SearchResult.Visible = false;
             for (int x = 0; x < nowPlaying.Items.Count; x++)
             {
-                if (nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.Replace(".mp3", "").ToLower()))
+                if (nowPlaying.GetItemText(nowPlaying.Items[x]).ToLower().Contains(search.Text.ToLower()))
                 {
                     SearchResult.Visible = true;
                     isFound = true;
