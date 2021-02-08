@@ -75,8 +75,6 @@ namespace OsuMp3
         }
         private void Play_Click(object sender, EventArgs e)
         {
-            
-            
             if (playpause == "play")
             {
                 if(player == null)
@@ -114,7 +112,7 @@ namespace OsuMp3
             {
                 player.Dispose();
             }
-            
+
             player = new Mp3Player(@addMultipleSong[nowPlaying.Text]);
             Play();
         }
@@ -507,6 +505,7 @@ namespace OsuMp3
         #region methods
         private void Play()
         {
+            player.SetVolume(volume.Value);
             player.Play();
             player.isPlaying = true;
             PlayStateChanged(3);
